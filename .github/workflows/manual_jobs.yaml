@@ -1,0 +1,109 @@
+name: Manual steps
+
+on:
+  workflow_dispatch:
+    inputs:
+      job:
+        description: "Select step to run"
+        required: true
+        default: 'build'
+        type: choice
+        options:
+          - sonar-scan
+          - build
+          - apply
+          - destroy
+jobs:
+  sonar_scan: 
+    if: ${{ github.event.inputs.job == 'sonar-scan' }}
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: SonarCloud scan
+        uses: sonarsource/sonarcloud-github-action@master
+        env: 
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  build:
+    if: ${{ github.event.inputs.job == 'build' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Build
+        uses: docker/setup-buildx-action@v2
+
+      - name: Docker login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build app
+        run: |
+          echo "Running docker build..."
+          COMMIT=$(echo "${GITHUB_SHA::8}")
+          docker build -t ${{ vars.REPO_URL }}:$COMMIT -t ${{ vars.REPO_URL }}:latest .
+          docker push ${{ vars.REPO_URL }}:$COMMIT
+          docker push ${{ vars.REPO_URL }}:latest
+
+  apply:
+    if: ${{ github.event.inputs.job == 'apply' }}
+    runs-on: ubuntu-latest
+    env:
+      TF_VAR_DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      TF_VAR_DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Terraform apply
+        run: |
+          COMMIT=$(echo "${GITHUB_SHA::8}")
+          TF_VAR_commit=$(echo "$COMMIT") 
+          cd terraform/
+          terraform init
+          terraform plan
+          terraform apply -auto-approve
+          echo "Done!"
+
+  destroy:
+    if: ${{ github.event.inputs.job == 'destroy' }}
+    runs-on: ubuntu-latest
+    env:
+      TF_VAR_DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      TF_VAR_DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Terraform destroy
+        run: |
+          cd terraform/
+          terraform init
+          terraform plan
+          terraform destroy -auto-approve
+          echo "Done!"
