@@ -14,17 +14,24 @@ on:
           - apply
           - destroy
 jobs:
-  sonar_scan: 
-    if: ${{ github.event.inputs.job == 'sonar-scan' }}
+  sonar_scan:
     runs-on: ubuntu-latest
-    steps: 
+    steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: SonarCloud scan
-        uses: sonarsource/sonarcloud-github-action@master
-        env: 
+      - name: Setup Maven Action
+        uses: s4u/setup-maven-action@v1.13.0
+
+      - name: Build and analyze
+        env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          mvn validate
+          mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:3.11.0.3922:sonar \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.organization=fabriciobcv \
+            -Dsonar.projectKey=es2-vadebicicleta-externo
 
   build:
     if: ${{ github.event.inputs.job == 'build' }}

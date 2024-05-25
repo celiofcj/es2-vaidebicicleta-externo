@@ -21,7 +21,7 @@ jobs:
           mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:3.11.0.3922:sonar \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.organization=fabriciobcv \
-            -Dsonar.projectKey=es2-vadebicicleta-base-example
+            -Dsonar.projectKey=es2-vadebicicleta-externo
 
   build:
     runs-on: ubuntu-latest
