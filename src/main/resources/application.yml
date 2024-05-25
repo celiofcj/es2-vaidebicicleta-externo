@@ -2,3 +2,5 @@ spring:
   application:
     name: externo
   output.ansi.enabled: always
+
+formato-data-validade: "yyyy-MM-dd"

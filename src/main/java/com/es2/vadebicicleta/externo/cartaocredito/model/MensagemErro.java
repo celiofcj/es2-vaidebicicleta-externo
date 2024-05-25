@@ -5,16 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CartaoDeCredito {
-    private String nomeTitular;
-    private String numero;
-    private String validade;
-    private String cvv;
+public class MensagemErro {
+    private String codigo;
+    private String mensagem;
 }
