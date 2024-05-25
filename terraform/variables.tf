@@ -3,7 +3,7 @@ variable "DOCKER_PASSWORD" {default = ""}
 variable "commit" {default = ""}
 
 locals{
-  app_name = "example_app"
+  app_name = "vadebicicleta-externo"
   app_port = 8080
   instace_type = "t2.micro"
   device_name = "/dev/sdf"
