@@ -1,0 +1,4 @@
+spring:
+  application:
+    name: externo
+  output.ansi.enabled: always
