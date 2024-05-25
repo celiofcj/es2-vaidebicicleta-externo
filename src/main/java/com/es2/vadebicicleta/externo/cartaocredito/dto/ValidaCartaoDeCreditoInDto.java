@@ -1,4 +1,4 @@
-package com.es2.vadebicicleta.externo.cartaocredito;
+package com.es2.vadebicicleta.externo.cartaocredito.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

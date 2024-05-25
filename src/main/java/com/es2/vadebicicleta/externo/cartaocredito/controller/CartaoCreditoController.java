@@ -1,5 +1,6 @@
-package com.es2.vadebicicleta.externo.cartaocredito;
+package com.es2.vadebicicleta.externo.cartaocredito.controller;
 
+import com.es2.vadebicicleta.externo.cartaocredito.dto.ValidaCartaoDeCreditoInDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
