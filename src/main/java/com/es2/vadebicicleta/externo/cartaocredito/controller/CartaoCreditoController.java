@@ -15,11 +15,15 @@ import java.util.List;
 @RestController
 @RequestMapping
 public class CartaoCreditoController {
+    private final CartaoCreditoService cartaoCreditoService;
+
     @Autowired
-    private CartaoCreditoService cartaoCreditoService;
+    public CartaoCreditoController(CartaoCreditoService cartaoCreditoService) {
+        this.cartaoCreditoService = cartaoCreditoService;
+    }
 
     @PostMapping("/validaCartaoDeCredito")
-    public ResponseEntity<?> validarCartaoCredito(@RequestBody CartaoDeCredito cartaoDeCredito){
+    public ResponseEntity<List<MensagemErro>> validarCartaoCredito(@RequestBody CartaoDeCredito cartaoDeCredito){
         List<MensagemErro> errosValidacao = cartaoCreditoService.validarCartaoDeCredito(cartaoDeCredito);
 
         if(errosValidacao.isEmpty()){
