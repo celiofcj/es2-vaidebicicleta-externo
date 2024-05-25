@@ -2,5 +2,18 @@ spring:
   application:
     name: externo
   output.ansi.enabled: always
+  mail:
+    host: email-smtp.us-west-2.amazonaws.com
+    username:
+    password:
+    properties:
+      mail:
+        transport.protocol: smtp
+        smtp:
+          port: 25
+          auth: true
+          starttls:
+            enabled: true
+            required: true
 
 formato-data-validade: "yyyy-MM-dd"
