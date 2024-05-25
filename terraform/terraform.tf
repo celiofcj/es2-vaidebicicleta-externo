@@ -5,6 +5,6 @@ terraform {
     bucket = "es2-vadebicicleta-terraform-states"
     region = "us-east-1"
     acl = "bucket-owner-full-control"
-    key = "apps/ecs-app-example.tfstate"
+    key = "apps/es2-vadebicicleta-externo.tfstate"
   }
 }
