@@ -43,8 +43,7 @@ jobs:
         run: |
           echo "Running docker build..."
           COMMIT=$(echo "${GITHUB_SHA::8}")
-          docker build -t ${{ vars.REPO_URL }}:$COMMIT -t ${{ vars.REPO_URL }}:latest .
-          docker push ${{ vars.REPO_URL }}:$COMMIT
+          docker build -t ${{ vars.REPO_URL }}:latest .
           docker push ${{ vars.REPO_URL }}:latest
 
   apply:
