@@ -3,9 +3,10 @@ spring:
     name: externo
   output.ansi.enabled: always
   mail:
-    host: email-smtp.us-west-2.amazonaws.com
-    username:
-    password:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         transport.protocol: smtp
@@ -15,5 +16,6 @@ spring:
           starttls:
             enabled: true
             required: true
+
 
 formato-data-validade: "yyyy-MM-dd"

@@ -3,6 +3,7 @@ package com.es2.vadebicicleta.externo.email.service;
 import com.es2.vadebicicleta.externo.email.model.RequisicaoEmail;
 import com.es2.vadebicicleta.externo.email.repository.EmailRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,8 @@ public class EmailService {
 
     private final EmailRepository repository;
     private final JavaMailSender emailSender;
+    @Value("${spring.mail.username}")
+    private String emailAddressOrigin;
 
     @Autowired
     public EmailService(JavaMailSender emailSender, EmailRepository repository) {
@@ -27,12 +30,12 @@ public class EmailService {
         }
 
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("nao-responda@vaidebicicleta.com");
+        message.setFrom(emailAddressOrigin);
         message.setTo(requisicaoEmail.getEmail());
         message.setSubject(requisicaoEmail.getAssunto());
         message.setText(requisicaoEmail.getMensagem());
 
-        //emailSender.send(message); FIXME Add when email is configured
+        emailSender.send(message);
 
         RequisicaoEmail emailEnviado = RequisicaoEmail.builder()
                 .email(requisicaoEmail.getEmail())
