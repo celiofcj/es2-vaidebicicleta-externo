@@ -53,7 +53,7 @@ jobs:
         run: |
           echo "Running docker build..."
           COMMIT=$(echo "${GITHUB_SHA::8}")
-          docker build --progress=plain -t ${{ vars.REPO_URL }}:$COMMIT -t ${{ vars.REPO_URL }}:latest --build-arg MAIL_USERNAME=${{ secrets.MAIL_USERNAME }} --build-arg MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }} .
+          docker build -t ${{ vars.REPO_URL }}:$COMMIT -t ${{ vars.REPO_URL }}:latest --build-arg MAIL_USERNAME=${{ secrets.MAIL_USERNAME }} .
           docker push ${{ vars.REPO_URL }}:$COMMIT
           docker push ${{ vars.REPO_URL }}:latest
 
