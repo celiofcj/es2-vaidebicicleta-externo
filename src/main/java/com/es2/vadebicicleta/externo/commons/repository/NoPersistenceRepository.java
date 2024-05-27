@@ -6,12 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 
 public abstract class NoPersistenceRepository<T extends Identificable<Long>> {
-
-    @Autowired
     private LongIdManager longIdManager;
     private Map<Long, T> elements;
 
-    public NoPersistenceRepository() {
+    @Autowired
+    protected NoPersistenceRepository(LongIdManager longIdManager) {
+        this.longIdManager = longIdManager;
         this.elements = new HashMap<>();
     }
 

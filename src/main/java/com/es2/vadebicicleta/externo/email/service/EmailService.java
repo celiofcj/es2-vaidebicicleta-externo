@@ -23,7 +23,7 @@ public class EmailService {
 
     public RequisicaoEmail enviarEmail(RequisicaoEmail requisicaoEmail){
         if(!Pattern.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", requisicaoEmail.getEmail())){
-            throw new RuntimeException();
+            throw new WrongEmailAdressFormatException("The format of " + requisicaoEmail.getEmail() + "is wrong");
         }
 
         SimpleMailMessage message = new SimpleMailMessage();
@@ -39,10 +39,7 @@ public class EmailService {
                 .assunto(requisicaoEmail.getAssunto())
                 .mensagem(requisicaoEmail.getMensagem())
                 .build();
-        RequisicaoEmail salvo;
 
-        salvo = repository.save(emailEnviado);
-
-        return salvo;
+        return repository.save(emailEnviado);
     }
 }

@@ -8,7 +8,7 @@ import java.util.Map;
 
 @Component
 public class LongIdManager {
-    private static Map<Class<?>, Long> idCounters;
+    private Map<Class<?>, Long> idCounters;
 
     public LongIdManager(){
         idCounters = new HashMap<>();

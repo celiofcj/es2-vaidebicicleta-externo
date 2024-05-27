@@ -11,15 +11,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping
 public class EmailControlller {
-    @Autowired
     private final RequisicaoEmailConverter requisicaoEmailConverter;
-    @Autowired
-    private EmailService emailService;
-
+    private final EmailService emailService;
 
     @Autowired
-    public EmailControlller(RequisicaoEmailConverter requisicaoEmailConverter) {
+    public EmailControlller(RequisicaoEmailConverter requisicaoEmailConverter, EmailService emailService) {
         this.requisicaoEmailConverter = requisicaoEmailConverter;
+        this.emailService = emailService;
     }
 
     @PostMapping("/enviarEmail")
