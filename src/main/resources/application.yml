@@ -2,6 +2,19 @@ spring:
   application:
     name: externo
   output.ansi.enabled: always
+  datasource:
+    url: jdbc:h2:mem:externo
+    driverClassName: org.h2.Driver
+    username: db_externo
+    password: es2-unirio
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  h2:
+    console:
+      enabled: true
   mail:
     host: smtp.gmail.com
     port: 587

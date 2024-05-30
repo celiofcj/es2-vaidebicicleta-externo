@@ -1,15 +1,7 @@
 package com.es2.vadebicicleta.externo.email.repository;
 
-import com.es2.vadebicicleta.externo.commons.repository.NoPersistenceRepository;
-import com.es2.vadebicicleta.externo.commons.repository.manager.LongIdManager;
 import com.es2.vadebicicleta.externo.email.model.RequisicaoEmail;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Repository
-public class EmailRepository extends NoPersistenceRepository<RequisicaoEmail> {
-    @Autowired
-    public EmailRepository(LongIdManager longIdManager){
-        super(longIdManager);
-    }
+public interface EmailRepository extends JpaRepository<RequisicaoEmail, Long> {
 }
