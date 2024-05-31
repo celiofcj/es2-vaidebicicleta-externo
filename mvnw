@@ -23,7 +23,7 @@
 #
 # Optional ENV vars
 # -----------------
-#   JAVA_HOME - location of a JDK home dir, required when download maven via java source
+#   JAVA_HOME - location of a JDK home dir, required when download maven via kotlin source
 #   MVNW_REPOURL - repo url base for downloading maven distribution
 #   MVNW_USERNAME/MVNW_PASSWORD - user and password for downloading maven
 #   MVNW_VERBOSE - true: enable verbose log; debug: trace the mvnw script; others: silence the output
@@ -63,7 +63,7 @@ set_java_home() {
     JAVACMD="$(
       'set' +e
       'unset' -f command 2>/dev/null
-      'command' -v java
+      'command' -v kotlin
     )" || :
     JAVACCMD="$(
       'set' +e
@@ -203,7 +203,7 @@ elif set_java_home; then
 	  }
 	}
 	END
-  # For Cygwin/MinGW, switch paths to Windows format before running javac and java
+  # For Cygwin/MinGW, switch paths to Windows format before running javac and kotlin
   verbose " - Compiling Downloader.java ..."
   "$(native_path "$JAVACCMD")" "$(native_path "$javaSource")" || die "Failed to compile Downloader.java"
   verbose " - Running Downloader.java ..."
