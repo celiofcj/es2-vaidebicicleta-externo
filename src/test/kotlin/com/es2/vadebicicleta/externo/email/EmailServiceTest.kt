@@ -8,6 +8,9 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.verify
+import io.mockk.verifyAll
+import io.mockk.verifyOrder
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -25,8 +28,8 @@ class EmailServiceTest {
     lateinit var emailService : EmailService
 
     @Test
-    @DisplayName("Quando envio uma requisição com email válido, envia o email e persiste a requisição")
-    fun enviarEmailTeste() {
+    @DisplayName("Quando envio uma requisição informações válidas, envia o email e persiste a requisição")
+    fun enviarEmailTesteSucesso() {
         val email = "email@email.com"
         val assunto = "Assunto do email"
         val mensagem = "Mensagem do email"
@@ -38,7 +41,14 @@ class EmailServiceTest {
         every { emailRepositoryMock.save(requisicao) } returns RequisicaoEmail(email, assunto, mensagem, id)
 
         val retorno = emailService.enviarEmail(RequisicaoEmail(email, assunto, mensagem))
-        assertNotNull(retorno, "Retorno não é nulo")
+        assertNotNull(retorno, "Retorno não pode ser nulo")
+
+        verify(exactly = 1) { emailClientMock.enviarEmail(email, assunto, mensagem)}
+        verify(exactly = 1) { emailRepositoryMock.save(requisicao) }
+        verifyOrder {
+            emailClientMock.enviarEmail(email, assunto, mensagem)
+            emailRepositoryMock.save(requisicao)
+        }
 
         assertAll("Verificações do retorno",
             { assertEquals(retorno.email, email, "Endereço de email retornado deve ser igual ao informado na requisição") },
