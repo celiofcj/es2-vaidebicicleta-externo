@@ -1,34 +1,34 @@
 package com.es2.vadebicicleta.externo.email.service
 
+import com.es2.vadebicicleta.externo.email.client.EmailClient
 import com.es2.vadebicicleta.externo.email.model.RequisicaoEmail
 import com.es2.vadebicicleta.externo.email.repository.EmailRepository
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.mail.SimpleMailMessage
-import org.springframework.mail.javamail.JavaMailSender
+import jakarta.mail.internet.AddressException
+import jakarta.mail.internet.InternetAddress
 import org.springframework.stereotype.Service
-import java.util.regex.Pattern
 
 @Service
-class EmailService @Autowired constructor(
-    private val emailSender: JavaMailSender,
-    private val repository: EmailRepository
+class EmailService (
+    val repository: EmailRepository,
+    val emailClient: EmailClient
 ) {
-    @Value("\${spring.mail.username}")
-    private val emailAddressOrigin: String? = null
     fun enviarEmail(requisicaoEmail: RequisicaoEmail): RequisicaoEmail {
 
-        if (!Pattern.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", requisicaoEmail.email)) {
-            throw WrongEmailAdressFormatException("The format of " + requisicaoEmail.email + "is wrong")
+        if(!validarFormatoEmail(requisicaoEmail.email)) {
+            throw WrongEmailAdressFormatException("Formato de email inválido." +
+                    " Recomendado consultar RFC 3696 e a errata associada")
         }
 
-        val message = SimpleMailMessage()
-        message.from = emailAddressOrigin
-        message.setTo(requisicaoEmail.email)
-        message.subject = requisicaoEmail.assunto
-        message.text = requisicaoEmail.mensagem
-        emailSender.send(message)
+        emailClient.enviarEmail(requisicaoEmail.email, requisicaoEmail.assunto, requisicaoEmail.mensagem)
 
         return repository.save(requisicaoEmail)
     }
+
+    fun validarFormatoEmail(email: String) =
+        try {
+            InternetAddress(email).validate()
+            true
+        } catch (e: AddressException) {
+            false
+        }
 }
