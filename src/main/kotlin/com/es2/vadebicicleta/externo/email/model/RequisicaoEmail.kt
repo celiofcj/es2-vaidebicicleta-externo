@@ -1,15 +1,21 @@
 package com.es2.vadebicicleta.externo.email.model
 
 import jakarta.persistence.*
+import jakarta.validation.constraints.Email
+import jakarta.validation.constraints.NotNull
 
 @Entity
 class RequisicaoEmail (
+    @NotNull
+    @Email
     @Column(nullable = false)
     var email: String,
 
+    @NotNull
     @Column(nullable = false)
     var assunto: String,
 
+    @NotNull
     @Column(nullable = false)
     var mensagem: String,
 
