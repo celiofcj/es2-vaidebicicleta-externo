@@ -57,8 +57,4 @@ class EmailServiceTest {
             { assertEquals(retorno.id, id, "Id retornado deve ser igual ao id esperado (${id})") }
         )
     }
-
-    @Test
-    fun validarFormatoEmail() {
-    }
 }

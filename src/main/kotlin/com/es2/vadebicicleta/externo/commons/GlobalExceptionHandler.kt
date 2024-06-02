@@ -1,5 +1,6 @@
 package com.es2.vadebicicleta.externo.commons
 
+import com.es2.vadebicicleta.externo.email.service.WrongEmailAdressFormatException
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -15,7 +16,7 @@ class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    fun handleMethodArgumentNotValidException(ex: MethodArgumentNotValidException) : ResponseEntity<Collection<MensagemErro>>{
+    fun handleMethodArgumentNotValidException(ex: MethodArgumentNotValidException) : ResponseEntity<Collection<MensagemErro>> {
         val bindingResult = ex.bindingResult
         val fieldErrors = bindingResult.fieldErrors
 
@@ -25,6 +26,15 @@ class GlobalExceptionHandler {
             val codigo = "422"
             MensagemErro(codigo, "$campo: $mensagem")
         }
+
+        return ResponseEntity.unprocessableEntity().body(mensagensDeErro)
+    }
+
+    @ExceptionHandler
+    fun handleWrongEmailAdressFormatException(ex: WrongEmailAdressFormatException) : ResponseEntity<Collection<MensagemErro>> {
+        val codigo = "422"
+        val mensagem = ex.message ?: ""
+        val mensagensDeErro = listOf<MensagemErro>(MensagemErro(codigo, mensagem))
 
         return ResponseEntity.unprocessableEntity().body(mensagensDeErro)
     }
