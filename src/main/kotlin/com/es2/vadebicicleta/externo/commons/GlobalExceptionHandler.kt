@@ -1,5 +1,6 @@
 package com.es2.vadebicicleta.externo.commons
 
+import com.es2.vadebicicleta.externo.email.service.CouldNotSendEmailException
 import com.es2.vadebicicleta.externo.email.service.WrongEmailAdressFormatException
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -37,6 +38,15 @@ class GlobalExceptionHandler {
         val mensagensDeErro = listOf<MensagemErro>(MensagemErro(codigo, mensagem))
 
         return ResponseEntity.unprocessableEntity().body(mensagensDeErro)
+    }
+
+    @ExceptionHandler
+    fun handleCouldNotSendEmailException(ex: CouldNotSendEmailException) : ResponseEntity<MensagemErro> {
+        val codigo = "500"
+        val mensagem = ex.message ?: ""
+        val mensagemErro = MensagemErro(codigo, mensagem)
+
+        return ResponseEntity.internalServerError().body(mensagemErro)
     }
 }
 

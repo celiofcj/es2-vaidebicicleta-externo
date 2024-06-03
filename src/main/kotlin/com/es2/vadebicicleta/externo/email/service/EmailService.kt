@@ -19,7 +19,11 @@ class EmailService (
                     " Recomendado consultar RFC 3696 e a errata associada")
         }
 
-        emailClient.enviarEmail(requisicaoEmail.email, requisicaoEmail.assunto, requisicaoEmail.mensagem)
+        try {
+            emailClient.enviarEmail(requisicaoEmail.email, requisicaoEmail.assunto, requisicaoEmail.mensagem)
+        } catch (e: Exception) {
+            throw CouldNotSendEmailException("O email não pôde ser enviado. Tente novamente mais tarde.")
+        }
 
         return repository.save(requisicaoEmail)
     }
