@@ -1,4 +1,4 @@
-package com.es2.vadebicicleta.externo.cartaocredito.config
+package com.es2.vadebicicleta.externo.commons.config
 
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
