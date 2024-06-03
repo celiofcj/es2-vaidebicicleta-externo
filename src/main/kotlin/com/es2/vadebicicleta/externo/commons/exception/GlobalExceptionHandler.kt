@@ -1,4 +1,4 @@
-package com.es2.vadebicicleta.externo.commons
+package com.es2.vadebicicleta.externo.commons.exception
 
 import com.es2.vadebicicleta.externo.email.service.CouldNotSendEmailException
 import com.es2.vadebicicleta.externo.email.service.WrongEmailAdressFormatException
