@@ -29,6 +29,3 @@ spring:
           starttls:
             enabled: true
             required: true
-
-
-formato-data-validade: "yyyy-MM-dd"
