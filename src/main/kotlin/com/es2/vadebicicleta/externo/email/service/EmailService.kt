@@ -20,7 +20,7 @@ class EmailService (
         }
 
         try {
-            emailClient.enviarEmail(requisicaoEmail.email, requisicaoEmail.assunto, requisicaoEmail.mensagem)
+            emailClient.enviarEmail(requisicaoEmail)
         } catch (e: Exception) {
             throw CouldNotSendEmailException("O email não pôde ser enviado. Tente novamente mais tarde.")
         }

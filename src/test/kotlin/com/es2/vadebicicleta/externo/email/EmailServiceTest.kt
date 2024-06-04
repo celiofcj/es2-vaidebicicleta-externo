@@ -41,16 +41,16 @@ class EmailServiceTest {
         val requisicao = RequisicaoEmail(email,
             assunto, mensagem)
 
-        every { emailClientMock.enviarEmail(email, assunto, mensagem) } returns Unit
+        every { emailClientMock.enviarEmail(requisicao) } returns Unit
         every { emailRepositoryMock.save(requisicao) } returns RequisicaoEmail(email, assunto, mensagem, id)
 
         val retorno = emailService.enviarEmail(RequisicaoEmail(email, assunto, mensagem))
         assertNotNull(retorno, "Retorno não pode ser nulo")
 
-        verify(exactly = 1) { emailClientMock.enviarEmail(email, assunto, mensagem)}
+        verify(exactly = 1) { emailClientMock.enviarEmail(requisicao)}
         verify(exactly = 1) { emailRepositoryMock.save(requisicao) }
         verifyOrder {
-            emailClientMock.enviarEmail(email, assunto, mensagem)
+            emailClientMock.enviarEmail(requisicao)
             emailRepositoryMock.save(requisicao)
         }
 
@@ -79,12 +79,14 @@ class EmailServiceTest {
         val email = "email@email.com"
         val assunto = "Assunto do email"
         val mensagem = "Mensagem do email"
+        val requisicao = RequisicaoEmail(email,
+            assunto, mensagem)
 
-        every { emailClientMock.enviarEmail(email, assunto, mensagem) } throws Exception("Exceção genérica")
+        every { emailClientMock.enviarEmail(requisicao) } throws Exception("Exceção genérica")
 
         assertThrows<CouldNotSendEmailException> ("A exceção deve ser lançada")
         { emailService.enviarEmail(RequisicaoEmail(email, assunto, mensagem)) }
 
-        verify { emailClientMock.enviarEmail(email, assunto, mensagem) }
+        verify { emailClientMock.enviarEmail(requisicao) }
     }
 }
