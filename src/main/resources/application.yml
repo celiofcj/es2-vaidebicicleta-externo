@@ -29,3 +29,6 @@ spring:
           starttls:
             enabled: true
             required: true
+
+cartao-de-credito:
+  url-operadora: ""
