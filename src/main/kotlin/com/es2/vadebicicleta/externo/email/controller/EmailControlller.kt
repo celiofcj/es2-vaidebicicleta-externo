@@ -1,8 +1,8 @@
 package com.es2.vadebicicleta.externo.email.controller
 
 import com.es2.vadebicicleta.externo.commons.dto.DtoConverter
-import com.es2.vadebicicleta.externo.email.dto.RequisicaoEmailInDto
-import com.es2.vadebicicleta.externo.email.dto.RequisicaoEmailOutDto
+import com.es2.vadebicicleta.externo.email.controller.dto.RequisicaoEmailInDto
+import com.es2.vadebicicleta.externo.email.controller.dto.RequisicaoEmailOutDto
 import com.es2.vadebicicleta.externo.email.model.RequisicaoEmail
 import com.es2.vadebicicleta.externo.email.service.EmailService
 import jakarta.validation.Valid

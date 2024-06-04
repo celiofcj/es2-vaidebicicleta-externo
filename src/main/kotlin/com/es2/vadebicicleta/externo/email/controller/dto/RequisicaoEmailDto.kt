@@ -1,4 +1,4 @@
-package com.es2.vadebicicleta.externo.email.dto
+package com.es2.vadebicicleta.externo.email.controller.dto
 
 import com.es2.vadebicicleta.externo.commons.dto.DtoConverter
 import com.es2.vadebicicleta.externo.email.model.RequisicaoEmail
