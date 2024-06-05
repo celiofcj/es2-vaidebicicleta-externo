@@ -13,12 +13,6 @@ class EmailService (
     val emailClient: EmailClient
 ) {
     fun enviarEmail(requisicaoEmail: RequisicaoEmail): RequisicaoEmail {
-
-        if(!validarFormatoEmail(requisicaoEmail.email)) {
-            throw WrongEmailAdressFormatException("Formato de email inválido." +
-                    " Recomendado consultar RFC 3696 e a errata associada")
-        }
-
         try {
             emailClient.enviarEmail(requisicaoEmail)
         } catch (e: Exception) {
@@ -27,12 +21,4 @@ class EmailService (
 
         return repository.save(requisicaoEmail)
     }
-
-    fun validarFormatoEmail(email: String) =
-        try {
-            InternetAddress(email).validate()
-            true
-        } catch (e: AddressException) {
-            false
-        }
 }

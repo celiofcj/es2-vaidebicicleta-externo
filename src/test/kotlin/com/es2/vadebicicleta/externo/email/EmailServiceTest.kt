@@ -63,17 +63,6 @@ class EmailServiceTest {
     }
 
     @Test
-    @DisplayName("Quando envio endereço de email invalido, lança exceção")
-    fun testeEnviarEmailEnderecoInvalido() {
-        val email = "email.com"
-        val assunto = "Assunto do email"
-        val mensagem = "Mensagem do email"
-
-        assertThrows<WrongEmailAdressFormatException> ("A exceção deve ser lançada")
-        { emailService.enviarEmail(RequisicaoEmail(email, assunto, mensagem)) }
-    }
-
-    @Test
     @DisplayName("Quando o envio do email falha, lança exceção")
     fun enviarEmailFalhaNoEnvio() {
         val email = "email@email.com"

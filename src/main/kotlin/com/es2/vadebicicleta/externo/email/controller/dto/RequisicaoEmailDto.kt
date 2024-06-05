@@ -2,6 +2,7 @@ package com.es2.vadebicicleta.externo.email.controller.dto
 
 import com.es2.vadebicicleta.externo.commons.dto.DtoConverter
 import com.es2.vadebicicleta.externo.email.model.RequisicaoEmail
+import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotNull
 import org.springframework.stereotype.Component
 
@@ -21,6 +22,8 @@ class RequisicaoEmailConverter : DtoConverter<RequisicaoEmail, RequisicaoEmailIn
 
 data class RequisicaoEmailInDto(
     @field: NotNull(message = "Campo email não deve ser nulo")
+    @field: Email(message = "Formato de email inválido." +
+            " Recomendado consultar RFC 3696 e a errata associada")
     val email: String? = null,
     @field: NotNull(message = "Campo assunto não deve ser nulo")
     val assunto: String? = null,
