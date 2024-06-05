@@ -19,8 +19,9 @@ class EmailControlller (
     private val emailService: EmailService
 ) {
     @PostMapping("/enviarEmail")
-    fun enviarEmail(@Valid @RequestBody dto: RequisicaoEmailInDto): ResponseEntity<Any> {
+    fun enviarEmail(@Valid @RequestBody dto: RequisicaoEmailInDto): ResponseEntity<RequisicaoEmailOutDto> {
         val emailEnviado = emailService.enviarEmail(requisicaoEmailConverter.toObject(dto))
-        return ResponseEntity.ok(emailEnviado)
+        val outDto = requisicaoEmailConverter.toDto(emailEnviado)
+        return ResponseEntity.ok(outDto)
     }
 }
