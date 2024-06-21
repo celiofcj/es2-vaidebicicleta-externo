@@ -16,7 +16,7 @@ class GlobalExceptionHandler {
     @ExceptionHandler
     fun handleAllUncaughtExceptions(ex: Exception) : ResponseEntity<MensagemErro>{
         val mensagemErro =  MensagemErro("500", "Um erro inesperado aconteceu")
-        logger.error(ex) { ex.message }
+        logger.error { ex.message }
         return ResponseEntity.internalServerError().body(mensagemErro)
     }
 
@@ -32,7 +32,7 @@ class GlobalExceptionHandler {
             MensagemErro(codigo, "$campo: $mensagem")
         }
 
-        logger.info (ex) { ex.message }
+        logger.error { ex.message }
         return ResponseEntity.unprocessableEntity().body(mensagensDeErro)
     }
 
@@ -42,7 +42,7 @@ class GlobalExceptionHandler {
         val mensagem = ex.message ?: ""
         val mensagensDeErro = listOf<MensagemErro>(MensagemErro(codigo, mensagem))
 
-        logger.info (ex) { ex.message }
+        logger.error { ex.message }
         return ResponseEntity.unprocessableEntity().body(mensagensDeErro)
     }
 
@@ -52,7 +52,7 @@ class GlobalExceptionHandler {
         val mensagem = ex.message ?: ""
         val mensagemErro = MensagemErro(codigo, mensagem)
 
-        logger.error(ex) { ex.message }
+        logger.error { ex.message }
         return ResponseEntity.internalServerError().body(mensagemErro)
     }
 }
