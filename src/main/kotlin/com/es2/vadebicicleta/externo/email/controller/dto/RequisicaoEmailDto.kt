@@ -25,7 +25,6 @@ data class RequisicaoEmailInDto(
     @field: Email(message = "Formato de email inválido." +
             " Recomendado consultar RFC 3696 e a errata associada")
     val email: String? = null,
-    @field: NotNull(message = "Campo assunto não deve ser nulo")
     val assunto: String? = null,
     @field: NotNull(message = "Campo mensagem não deve ser nulo")
     val mensagem: String? = null
