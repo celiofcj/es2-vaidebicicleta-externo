@@ -12,6 +12,7 @@ import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
 import org.hamcrest.CoreMatchers.*
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -34,6 +35,7 @@ class EmailControllerTest {
     private val mapper = jacksonObjectMapper()
 
     @Test
+    @DisplayName("Quando faço uma requisicao com campo validos, retorno 200 com a resposta esperada")
     fun testeEnviarEmailSucesso() {
         val email = "email@email.com"
         val assunto = "Assunto do email"
@@ -64,6 +66,7 @@ class EmailControllerTest {
     }
 
     @Test
+    @DisplayName("Quando envio um email invalido, retorno codigo 422 com mensagem")
     fun testEnviarEmailEnderecoInvalido() {
         val email = "emailemail.com"
         val assunto = "Assunto do email"
@@ -89,6 +92,7 @@ class EmailControllerTest {
     }
 
     @Test
+    @DisplayName("Quando envio campo nulos não nuláveis, retorno uma lista de erros 422 com mensagem")
     fun testEnviarEmailCamposNulos() {
         val email : String? = null
         val assunto : String? = null
