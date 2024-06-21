@@ -11,6 +11,7 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
+import org.hamcrest.CoreMatchers.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -30,31 +31,91 @@ class EmailControllerTest {
     @MockkBean
     lateinit var emailService: EmailService
 
+    private val mapper = jacksonObjectMapper()
+
     @Test
     fun testeEnviarEmailSucesso() {
         val email = "email@email.com"
         val assunto = "Assunto do email"
         val mensagem = "Mensagem do email"
         val id = 47L
-        val requisicao = RequisicaoEmail(email, assunto, mensagem)
 
+        val requisicaoDto = RequisicaoEmailInDto(email, assunto, mensagem)
+        val requisicao = RequisicaoEmail(email, assunto, mensagem)
         val esperado = RequisicaoEmail(email, assunto, mensagem, id)
 
         every { emailService.enviarEmail(requisicao) } returns esperado
         every { converter.toObject(RequisicaoEmailInDto(email, assunto, mensagem)) } returns RequisicaoEmail(email, assunto, mensagem)
         every { converter.toDto(esperado) } returns RequisicaoEmailOutDto(id, email, assunto, mensagem)
 
-        val mapper = jacksonObjectMapper()
+
         mockMvc.post("/enviarEmail") {
             contentType = MediaType.APPLICATION_JSON
-            content = mapper.writeValueAsString(requisicao)
             accept = MediaType.APPLICATION_JSON
+            content = mapper.writeValueAsString( requisicaoDto )
         }.andExpect {
             status { isOk() }
-            content { contentType(MediaType.APPLICATION_JSON) }
+            header { MediaType.APPLICATION_JSON }
             content { json(mapper.writeValueAsString(esperado))  }
+
         }
 
         verify (exactly = 1) { emailService.enviarEmail(requisicao) }
+    }
+
+    @Test
+    fun testEnviarEmailEnderecoInvalido() {
+        val email = "emailemail.com"
+        val assunto = "Assunto do email"
+        val mensagem = "Mensagem do email"
+
+        val requisicaoDto = RequisicaoEmailInDto(email, assunto, mensagem)
+
+        mockMvc.post("/enviarEmail") {
+            contentType = MediaType.APPLICATION_JSON
+            accept = MediaType.APPLICATION_JSON
+            content = mapper.writeValueAsString(requisicaoDto)
+        }.andExpect {
+            status { isUnprocessableEntity() }
+            header { MediaType.APPLICATION_JSON }
+            jsonPath("$").isArray()
+            jsonPath("$").value(hasItem(
+                mapOf(
+                    "codigo" to "422",
+                    "mensagem" to "email: Formato de email inválido. Recomendado consultar RFC 3696 e a errata associada"
+                )
+            ))
+        }
+    }
+
+    @Test
+    fun testEnviarEmailCamposNulos() {
+        val email : String? = null
+        val assunto : String? = null
+        val mensagem : String? = null
+
+        val requisicaoDto = RequisicaoEmailInDto(email, assunto, mensagem)
+
+        mockMvc.post("/enviarEmail") {
+            contentType = MediaType.APPLICATION_JSON
+            accept = MediaType.APPLICATION_JSON
+            content = mapper.writeValueAsString(requisicaoDto)
+        }.andExpect {
+            status { isUnprocessableEntity() }
+            header { MediaType.APPLICATION_JSON }
+            jsonPath("$").isArray()
+            jsonPath("$").value(hasItem(
+                mapOf(
+                    "codigo" to "422",
+                    "mensagem" to "email: Campo email não deve ser nulo"
+                )
+            ))
+            jsonPath("$").value(hasItem(
+                mapOf(
+                    "codigo" to "422",
+                    "mensagem" to "mensagem: Campo mensagem não deve ser nulo"
+                )
+            ))
+        }
     }
 }
