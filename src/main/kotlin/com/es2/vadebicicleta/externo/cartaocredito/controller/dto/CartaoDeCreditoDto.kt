@@ -12,7 +12,6 @@ import java.time.format.DateTimeFormatter
 
 
 private const val FORMATO_DATA = "yyyy-MM-dd"
-private const val FORMATO_DATA_MENSAGEM = "AAAA-MM-DD"
 
 @Component
 class CartaoDeCreditoConverter : DtoConverter<CartaoDeCredito, CartaoDeCreditoInDto, CartaoDeCreditoOutDto>{
@@ -38,7 +37,7 @@ data class CartaoDeCreditoInDto (
     @field: NotNull
     val numero: String?,
     @field: NotNull
-    @field: DatePattern(message = "Deve ser no formato $FORMATO_DATA_MENSAGEM", pattern = FORMATO_DATA)
+    @field: DatePattern(message = "Deve ser no formato $FORMATO_DATA", pattern = FORMATO_DATA)
     val validade: String?,
     @field: NotNull
     @field: Pattern(regexp = "^\\d{3,4}$", message = "Deve ser composto por 3 ou 4 números")
