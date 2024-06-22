@@ -98,7 +98,7 @@ class CobrancaControllerTest {
     @DisplayName("Quando envio o valor negativo, retorna uma lista de erros com a mensagem de valor inválido")
     @Disabled
     fun testeRealizarCobrancaValorNegativo() {
-        val valor = -1L
+        val valor = -1F
         val idCiclista = 39L
 
         mockMvc.post("/cobranca") {
