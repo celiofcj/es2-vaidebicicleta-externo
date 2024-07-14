@@ -1,5 +1,6 @@
 package com.es2.vadebicicleta.externo.commons.exception
 
+import com.es2.vadebicicleta.externo.cartaocredito.service.InvalidCreditCardException
 import com.es2.vadebicicleta.externo.email.service.CouldNotSendEmailException
 import com.es2.vadebicicleta.externo.email.service.WrongEmailAdressFormatException
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -54,6 +55,17 @@ class GlobalExceptionHandler {
 
         logger.error { ex.message }
         return ResponseEntity.internalServerError().body(mensagemErro)
+    }
+
+    @ExceptionHandler
+    fun handleInvalidCreditCardException(ex: InvalidCreditCardException) : ResponseEntity<Collection<MensagemErro>>{
+        val codigo = "422"
+        val mensagem = "Cartao de credito: ${ex.cartaoDeCredito} invalido. Erros: ${ex.errors}"
+        val mensagensDeErro = ex.errors?.map { erro -> MensagemErro(codigo, erro) }
+
+        logger.info { mensagem }
+
+        return ResponseEntity.unprocessableEntity().body(mensagensDeErro)
     }
 }
 

@@ -11,7 +11,7 @@ import java.time.LocalDateTime
 @Service
 class CobrancaService(
     val aluguelClient : AluguelClient,
-    val operadoraClient: OperadoraClient,
+    val operadoraCartaoDeCreditoClient: OperadoraClient,
     val cobrancaRepository: CobrancaRepository
 ) {
 
@@ -27,7 +27,7 @@ class CobrancaService(
         val cartaoDeCredito = aluguelClient.getCartaoDeCredito(ciclista)
             ?: throw BrokenRequirementException("Erro ao obter o cartão de crédito do ciclista: $ciclista")
 
-        val statusPagamento = operadoraClient.enviarCobranca(cartaoDeCredito)
+        val statusPagamento = operadoraCartaoDeCreditoClient.enviarCobranca(cartaoDeCredito)
 
         val horaFinalizacao = LocalDateTime.now()
         val cobranca = Cobranca(ciclista = ciclista, valor = valor,

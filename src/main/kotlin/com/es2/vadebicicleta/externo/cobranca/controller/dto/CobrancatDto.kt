@@ -37,10 +37,10 @@ data class CobrancaInDto (
 )
 
 data class CobrancaOutDto (
-    val id : Long?,
-    val status : String?,
-    val horaSolicitacao : String?,
-    val horaFinalizacao : String?,
-    val valor: BigDecimal?,
-    val ciclista : Long?
+    val id : Long? = null,
+    val status : String? = null,
+    val horaSolicitacao : String? = null,
+    val horaFinalizacao : String? = null,
+    val valor: BigDecimal? = null,
+    val ciclista : Long? = null
 )
