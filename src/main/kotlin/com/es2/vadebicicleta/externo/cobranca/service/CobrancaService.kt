@@ -9,6 +9,7 @@ import com.es2.vadebicicleta.externo.commons.exception.ResourceNotFoundException
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
+import java.util.stream.Collectors
 
 val logger = KotlinLogging.logger {}
 
@@ -57,5 +58,11 @@ class CobrancaService(
             horaSolicitacao = horaSolicitacao, horaFinalizacao = horaFinalizacao, filaDeCobranca = true)
 
         return cobrancaRepository.save(cobranca)
+    }
+
+    fun processarCobrancasEmFila() : List<Cobranca> {
+        val cobrancasEmfila = cobrancaRepository.findByFilaDeCobrancaTrue()
+
+        return cobrancasEmfila.map { cobranca -> enviarCobranca(cobranca) }
     }
 }

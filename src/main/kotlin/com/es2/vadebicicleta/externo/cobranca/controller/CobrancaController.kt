@@ -35,4 +35,13 @@ class CobrancaController(val converter : DtoConverter<Cobranca, CobrancaInDto, C
         val outDto = converter.toDto(cobranca)
         return ResponseEntity.ok(outDto)
     }
+
+    @PostMapping("/processaCobrancasEmFila")
+    fun processaCobrancasEmFila() : ResponseEntity<List<CobrancaOutDto>> {
+        val cobrancas = cobrancaService.processarCobrancasEmFila()
+
+        val outDtos = cobrancas.map { cobranca -> converter.toDto(cobranca) }
+
+        return ResponseEntity.ok(outDtos)
+    }
 }
