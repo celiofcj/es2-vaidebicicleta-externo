@@ -36,4 +36,5 @@ spring:
 vadebicicleta:
   cartao-de-credito:
     operadora:
-      url: "http://localhost:8080/consultar"
+      url: "http://localhost:8080"
+  usar-servicos-reais: false
