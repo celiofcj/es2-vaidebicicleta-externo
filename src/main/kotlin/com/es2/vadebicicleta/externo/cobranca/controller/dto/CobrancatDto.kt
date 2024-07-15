@@ -41,13 +41,13 @@ class CobrancaCoverter : DtoConverter<Cobranca, CobrancaInDto, CobrancaOutDto> {
 }
 
 data class CobrancaInDto (
-    @Digits(integer = 16,fraction = 2,
+    @field: Digits(integer = 16,fraction = 2,
         message = "Campo valor aceita no máximo 16 casas de inteiros e 2 casas de precisão")
-    @NotNull(message = "Campo valor não deve ser nulo")
-    @Min(value = 0)
+    @field: NotNull(message = "Campo valor não deve ser nulo")
+    @field :Min(value = 0)
     val valor : BigDecimal?,
-    @Min(0, message = "Campo ciclista não deve ser menor que 0.")
-    @NotNull
+    @field: Min(0, message = "Campo ciclista não deve ser menor que 0.")
+    @field:NotNull
     val ciclista : Long?
 )
 
