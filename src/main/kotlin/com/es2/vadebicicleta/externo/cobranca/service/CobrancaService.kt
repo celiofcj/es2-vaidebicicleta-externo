@@ -9,7 +9,6 @@ import com.es2.vadebicicleta.externo.commons.exception.ResourceNotFoundException
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
-import java.util.stream.Collectors
 
 val logger = KotlinLogging.logger {}
 

@@ -38,8 +38,8 @@ class Cobranca (
     }
 
     override fun hashCode(): Int {
-        var result = ciclista?.hashCode() ?: 0
-        result = 31 * result + (valor?.hashCode() ?: 0)
+        var result = ciclista.hashCode()
+        result = 31 * result + (valor.hashCode())
         result = 31 * result + (id?.hashCode() ?: 0)
         result = 31 * result + (status?.hashCode() ?: 0)
         result = 31 * result + (horaSolicitacao?.hashCode() ?: 0)
