@@ -1,5 +1,6 @@
 package com.es2.vadebicicleta.externo.cobranca.service
 
+import com.es2.vadebicicleta.externo.cartaocredito.model.StatusPagamentoEnum
 import com.es2.vadebicicleta.externo.cartaocredito.service.CartaoDeCreditoService
 import com.es2.vadebicicleta.externo.cobranca.client.AluguelClient
 import com.es2.vadebicicleta.externo.cobranca.model.Cobranca
@@ -21,13 +22,11 @@ class CobrancaService(
         val horaSolicitacao = LocalDateTime.now();
 
         val valor : Long = when {
-            novaCobranca.valor == null -> throw IllegalArgumentException("Valor não pode ser nulo")
             novaCobranca.valor < 0 -> throw IllegalArgumentException("Valor não pode ser negativo")
             else -> novaCobranca.valor
         }
 
         val ciclista : Long = when {
-            novaCobranca.ciclista == null -> throw IllegalArgumentException("Ciclista não pode ser nulo")
             novaCobranca.ciclista < 0 -> throw IllegalArgumentException("Id do ciclista não pode ser negativo")
             else -> novaCobranca.ciclista
         }
@@ -47,5 +46,16 @@ class CobrancaService(
     fun obterCobranca(idCobranca: Long): Cobranca {
         return cobrancaRepository.findById(idCobranca).orElseThrow {
             ResourceNotFoundException("Cobrança não encontrada, id: $idCobranca") }
+    }
+
+    fun colocarNaFilaDeCobranca(novaCobranca: Cobranca): Cobranca {
+        val horaSolicitacao = LocalDateTime.now();
+        val horaFinalizacao = LocalDateTime.now()
+
+        val cobranca =  Cobranca(
+            ciclista = novaCobranca.ciclista, valor = novaCobranca.valor, status = StatusPagamentoEnum.PENDENTE,
+            horaSolicitacao = horaSolicitacao, horaFinalizacao = horaFinalizacao, filaDeCobranca = true)
+
+        return cobrancaRepository.save(cobranca)
     }
 }

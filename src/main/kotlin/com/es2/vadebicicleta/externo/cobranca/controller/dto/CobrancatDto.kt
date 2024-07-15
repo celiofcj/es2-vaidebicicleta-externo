@@ -33,7 +33,7 @@ class CobrancaCoverter : DtoConverter<Cobranca, CobrancaInDto, CobrancaOutDto> {
             o.status.toString(),
             o.horaSolicitacao?.format(dateTimeFormatterDefault),
             o.horaFinalizacao?.format(dateTimeFormatterDefault),
-            BigDecimal(o.valor ?: 0).scaleByPowerOfTen(-2),
+            BigDecimal(o.valor).scaleByPowerOfTen(-2),
             o.ciclista
         )
     }

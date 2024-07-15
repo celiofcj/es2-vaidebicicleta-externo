@@ -1,6 +1,7 @@
 package com.es2.vadebicicleta.externo.cobranca.model
 
 import com.es2.vadebicicleta.externo.cartaocredito.model.StatusPagamentoEnum
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -9,13 +10,15 @@ import java.time.LocalDateTime
 
 @Entity
 class Cobranca (
-    val ciclista : Long? = null,
-    val valor: Long? = null,
+    val ciclista : Long,
+    val valor: Long,
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id : Long? = null,
     val status : StatusPagamentoEnum? = null,
     val horaSolicitacao : LocalDateTime? = null,
-    val horaFinalizacao : LocalDateTime? = null
+    val horaFinalizacao : LocalDateTime? = null,
+    @JsonIgnore
+    val filaDeCobranca : Boolean = false
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -29,6 +32,7 @@ class Cobranca (
         if (status != other.status) return false
         if (horaSolicitacao != other.horaSolicitacao) return false
         if (horaFinalizacao != other.horaFinalizacao) return false
+        if (filaDeCobranca != other.filaDeCobranca) return false
 
         return true
     }
@@ -40,12 +44,11 @@ class Cobranca (
         result = 31 * result + (status?.hashCode() ?: 0)
         result = 31 * result + (horaSolicitacao?.hashCode() ?: 0)
         result = 31 * result + (horaFinalizacao?.hashCode() ?: 0)
+        result = 31 * result + filaDeCobranca.hashCode()
         return result
     }
 
     override fun toString(): String {
-        return "Cobranca(ciclista=$ciclista, valor=$valor, id=$id, status=$status, horaSolicitacao=$horaSolicitacao, horaFinalizacao=$horaFinalizacao)"
+        return "Cobranca(ciclista=$ciclista, valor=$valor, id=$id, status=$status, horaSolicitacao=$horaSolicitacao, horaFinalizacao=$horaFinalizacao, filaDeCobranca=$filaDeCobranca)"
     }
-
-
 }
