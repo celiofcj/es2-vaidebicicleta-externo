@@ -23,12 +23,10 @@ import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 
 @ExtendWith(MockKExtension::class)
-@WebMvcTest(EmailControlller::class)
+@WebMvcTest(EmailControlller::class, DtoConverter::class)
 class EmailControllerTest {
     @Autowired
     lateinit var mockMvc: MockMvc
-    @MockkBean
-    lateinit var converter: DtoConverter<RequisicaoEmail, RequisicaoEmailInDto, RequisicaoEmailOutDto>
     @MockkBean
     lateinit var emailService: EmailService
 
@@ -47,9 +45,6 @@ class EmailControllerTest {
         val esperado = RequisicaoEmail(email, assunto, mensagem, id)
 
         every { emailService.enviarEmail(requisicao) } returns esperado
-        every { converter.toObject(RequisicaoEmailInDto(email, assunto, mensagem)) } returns RequisicaoEmail(email, assunto, mensagem)
-        every { converter.toDto(esperado) } returns RequisicaoEmailOutDto(id, email, assunto, mensagem)
-
 
         mockMvc.post("/enviarEmail") {
             contentType = MediaType.APPLICATION_JSON

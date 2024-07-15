@@ -1,11 +1,16 @@
 package com.es2.vadebicicleta.externo.cobranca
 
+import com.es2.vadebicicleta.externo.cartaocredito.model.StatusPagamentoEnum
 import com.es2.vadebicicleta.externo.cobranca.controller.CobrancaController
+import com.es2.vadebicicleta.externo.cobranca.model.Cobranca
+import com.es2.vadebicicleta.externo.cobranca.service.CobrancaService
+import com.es2.vadebicicleta.externo.commons.dto.DtoConverter
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ninjasquad.springmockk.MockkBean
+import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.equalTo
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -15,28 +20,44 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @ExtendWith(MockKExtension::class)
-@WebMvcTest(CobrancaController::class)
+@WebMvcTest(CobrancaController::class, DtoConverter::class, CobrancaService::class)
 class CobrancaControllerTest {
 
     @Autowired
     lateinit var mockMvc: MockMvc
 
+    @MockkBean
+    lateinit var mockCobrancaService: CobrancaService
+
     private val mapper = jacksonObjectMapper()
+
+    private val formatoData = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
     @Test
     @DisplayName("Quando faço uma requisição válida, retorna 200 com a resposta esperada")
-    @Disabled
     fun testeRealizarCobrancaSucesso() {
+
         val valor = 13.49F
+        val valorLong = 1349L
         val idCiclista = 39L
 
         val id = 126L
         val status = "PAGA"
         val horaSolicitacao  = "2024-06-21T02:32:19.457Z"
+        val horaSolicitacaoDateTime : LocalDateTime = LocalDateTime.from(DateTimeFormatter.ofPattern(formatoData).parse(horaSolicitacao))
         val horaFinalizacao = "2024-06-21T02:32:19.457Z"
+        val horaFinalizacaoDateTime = LocalDateTime.from(DateTimeFormatter.ofPattern(formatoData).parse(horaSolicitacao))
         val valorResposta = 13.49F
+
+        every { mockCobrancaService.enviarCobranca(Cobranca(idCiclista, 1349)) }
+            .returns(
+                Cobranca(idCiclista, 1349, id, status = StatusPagamentoEnum.PAGA,
+                    horaSolicitacaoDateTime, horaFinalizacaoDateTime)
+            )
 
         mockMvc.post("/cobranca") {
             contentType = MediaType.APPLICATION_JSON
@@ -63,7 +84,6 @@ class CobrancaControllerTest {
 
     @Test
     @DisplayName("Quando envio campos nulos não nuláveis, retorna 422 uma lista de erros com mensagem para cada campo")
-    @Disabled
     fun testeRealizarCobrancaCamposNulos() {
         val valor = null
         val idCiclista = null
@@ -96,7 +116,6 @@ class CobrancaControllerTest {
 
     @Test
     @DisplayName("Quando envio o valor negativo, retorna uma lista de erros com a mensagem de valor inválido")
-    @Disabled
     fun testeRealizarCobrancaValorNegativo() {
         val valor = -1F
         val idCiclista = 39L
