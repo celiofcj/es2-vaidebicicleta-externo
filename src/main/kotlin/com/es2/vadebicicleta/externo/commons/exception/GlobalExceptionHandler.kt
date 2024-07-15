@@ -4,6 +4,7 @@ import com.es2.vadebicicleta.externo.cartaocredito.service.InvalidCreditCardExce
 import com.es2.vadebicicleta.externo.email.service.CouldNotSendEmailException
 import com.es2.vadebicicleta.externo.email.service.WrongEmailAdressFormatException
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -66,6 +67,18 @@ class GlobalExceptionHandler {
         logger.info { mensagem }
 
         return ResponseEntity.unprocessableEntity().body(mensagensDeErro)
+    }
+
+    @ExceptionHandler
+    fun handleResourceNotFoundException(ex: ResourceNotFoundException) : ResponseEntity<MensagemErro> {
+        val codigo = "404"
+        val mensagem = ex.message
+
+        val mensagemErro = MensagemErro(codigo, mensagem ?: "")
+
+        logger.info { mensagem }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(mensagemErro)
     }
 }
 

@@ -4,6 +4,7 @@ import com.es2.vadebicicleta.externo.cartaocredito.service.CartaoDeCreditoServic
 import com.es2.vadebicicleta.externo.cobranca.client.AluguelClient
 import com.es2.vadebicicleta.externo.cobranca.model.Cobranca
 import com.es2.vadebicicleta.externo.cobranca.repository.CobrancaRepository
+import com.es2.vadebicicleta.externo.commons.exception.ResourceNotFoundException
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -41,5 +42,10 @@ class CobrancaService(
             status = statusPagamento, horaSolicitacao = horaSolicitacao, horaFinalizacao = horaFinalizacao)
 
         return cobrancaRepository.save(cobranca)
+    }
+
+    fun obterCobranca(idCobranca: Long): Cobranca {
+        return cobrancaRepository.findById(idCobranca).orElseThrow {
+            ResourceNotFoundException("Cobrança não encontrada, id: $idCobranca") }
     }
 }
