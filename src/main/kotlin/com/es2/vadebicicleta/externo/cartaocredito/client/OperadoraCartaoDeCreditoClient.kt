@@ -49,52 +49,55 @@ class OperadoraClientDefaultImpl(
         }
 
         val creditCardPayment = getCreditCardPaymentType(cartaoDeCredito)
+        val processingOptions = ProcessingOptions()
+        processingOptions.isIsFirstSubsequentAuth = true
 
-        val transactionType = TransactionTypeEnum.AUTH_ONLY_TRANSACTION.value()
-        val amount = BigDecimal.ZERO
+        val response = doRequest(TransactionTypeEnum.AUTH_ONLY_TRANSACTION, creditCardPayment,
+            BigDecimal.valueOf(0.01), purchaseOrderNumber = "1", processingOptions = processingOptions)
 
-        val response = doRequest(transactionType, creditCardPayment, amount)
-
-        if(response.messages.resultCode != MessageTypeEnum.OK) {
+        if(response.messages?.resultCode == null || response.messages.resultCode != MessageTypeEnum.OK) {
             throw ExternalServiceException("Erro na integracao com Authorize.Net. ${response.messages.message}")
         }
 
-        val result = response.transactionResponse
+        val result = response.transactionResponse ?: throw ExternalServiceException("Erro na integracao com Authorize.Net.")
 
-        if(!result.responseCode.equals("1") || !result.cvvResultCode.equals("M")) {
+        if(!result.responseCode.equals("1")) {
             return CartaoDeCreditoValidacao(false, listOf("Cartao de credito invalido"))
         }
+
+        anularTransacao(result.transId)
 
         return CartaoDeCreditoValidacao(true)
     }
 
     override fun enviarCobranca(cartaoDeCredito: CartaoDeCredito) : CartaoDeCreditoCobrancaResposta {
-        if(!servicosReais) {
-            return CartaoDeCreditoCobrancaResposta("SUCESSO")
+        return CartaoDeCreditoCobrancaResposta("SUCESSO")
+    }
+
+    private fun anularTransacao(refTransId: String) {
+        val response = doRequest(TransactionTypeEnum.VOID_TRANSACTION, refTransId = refTransId)
+
+        if(response.messages?.resultCode == null || response.messages.resultCode != MessageTypeEnum.OK) {
+            throw ExternalServiceException("Erro na integracao com Authorize.Net. ${response.messages.message}")
         }
-
-        val response : ResponseEntity<CartaoDeCreditoCobrancaDto> =
-           ResponseEntity.ok().build()
-
-        if(response.statusCode != HttpStatus.OK) {
-            throw ExternalServiceException(
-                "Conexão com a operadora de cartão de crédito mal sucedida. Código ${response.statusCode}")
-        }
-
-        return converteResponseCobranca(response.body ?: throw ExternalServiceException(
-            "Erro inesperado na integracação com a operadora de cartão de crédtio (cobrança): resposta com body null"))
     }
 
     private fun doRequest(
-        transactionType: String?,
-        paymentType: PaymentType,
-        amount: BigDecimal?,
+        transactionType: TransactionTypeEnum,
+        paymentType: PaymentType? = null,
+        amount: BigDecimal? = null,
+        refTransId: String? = null,
+        purchaseOrderNumber: String? = null,
+        processingOptions: ProcessingOptions? = null
     ): CreateTransactionResponse {
 
         val transactionObject = TransactionRequestType()
-        transactionObject.transactionType = transactionType
+        transactionObject.transactionType = transactionType.value()
         transactionObject.payment = paymentType
         transactionObject.amount = amount
+        transactionObject.refTransId = refTransId
+        transactionObject.poNumber = purchaseOrderNumber
+        transactionObject.processingOptions = processingOptions
 
         val request = CreateTransactionRequest()
         request.transactionRequest = transactionObject
@@ -102,37 +105,22 @@ class OperadoraClientDefaultImpl(
         val controller = CreateTransactionController(request)
         controller.execute()
 
-        if(controller.resultCode != MessageTypeEnum.OK) {
-            throw ExternalServiceException("Erro na integração com Authorize.Net.")
-        }
-
-        val response = controller.apiResponse
-
-        return response
+        return controller.apiResponse ?: throw ExternalServiceException("Erro na integração com Authorize.Net.")
     }
+}
 
-    fun getCreditCardPaymentType(cartaoDeCredito : CartaoDeCredito) : PaymentType {
-        val numero = cartaoDeCredito.numero
-        val dataDeVencimento = "${cartaoDeCredito.validade.month.value}${cartaoDeCredito.validade.year}"
-        val cvv = cartaoDeCredito.cvv
-        val creditCard = CreditCardType()
+private fun getCreditCardPaymentType(cartaoDeCredito : CartaoDeCredito) : PaymentType {
+    val numero = cartaoDeCredito.numero
+    val dataDeVencimento = "${cartaoDeCredito.validade.month.value}${cartaoDeCredito.validade.year}"
+    val cvv = cartaoDeCredito.cvv
+    val creditCard = CreditCardType()
 
-        creditCard.cardNumber = numero
-        creditCard.expirationDate = dataDeVencimento
-        creditCard.cardCode = cvv
+    creditCard.cardNumber = numero
+    creditCard.expirationDate = dataDeVencimento
+    creditCard.cardCode = cvv
 
-        val paymentType = PaymentType()
-        paymentType.creditCard = creditCard
+    val paymentType = PaymentType()
+    paymentType.creditCard = creditCard
 
-        return paymentType
-    }
-
-
-    private fun converteResponseCobranca(body: CartaoDeCreditoCobrancaDto) : CartaoDeCreditoCobrancaResposta {
-        return CartaoDeCreditoCobrancaResposta(
-            body.status ?: throw ExternalServiceException(
-                "Erro inesperado na integracação com a operadora de cartão de crédtio: campo \"status\" null"),
-                body.erros ?: emptyList()
-            )
-    }
+    return paymentType
 }
