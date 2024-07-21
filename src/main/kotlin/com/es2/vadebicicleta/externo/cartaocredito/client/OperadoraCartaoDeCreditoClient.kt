@@ -3,6 +3,7 @@ package com.es2.vadebicicleta.externo.cartaocredito.client
 import com.es2.vadebicicleta.externo.cartaocredito.client.dto.CartaoDeCreditoCobrancaDto
 import com.es2.vadebicicleta.externo.cartaocredito.model.CartaoDeCredito
 import com.es2.vadebicicleta.externo.commons.exception.ExternalServiceException
+import io.github.oshai.kotlinlogging.KotlinLogging
 import net.authorize.Environment
 import net.authorize.api.contract.v1.*
 import net.authorize.api.controller.CreateTransactionController
@@ -11,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
-import org.springframework.web.client.RestOperations
 
 import java.math.BigDecimal
 
@@ -21,11 +21,10 @@ interface OperadoraClient {
     fun enviarCobranca(cartaoDeCredito: CartaoDeCredito) : CartaoDeCreditoCobrancaResposta
 }
 
+private val logger = KotlinLogging.logger {}
+
 @Service
 class OperadoraClientDefaultImpl(
-    val restOperations: RestOperations,
-    @Value("\${vadebicicleta.cartao-de-credito.operadora.url}")
-    val urlOperadora : String,
     @Value("\${vadebicicleta.usar-servicos-reais}")
     val servicosReais : Boolean,
     @Value("\${vadebicicleta.cartao-de-credito.operadora.id}")
@@ -38,7 +37,7 @@ class OperadoraClientDefaultImpl(
         if(servicosReais) {
             val merchantAuthenticationType = MerchantAuthenticationType()
             merchantAuthenticationType.name = loginId
-            merchantAuthenticationType.clientKey = transactionKey
+            merchantAuthenticationType.transactionKey = transactionKey
             ApiOperationBase.setMerchantAuthentication(merchantAuthenticationType)
             ApiOperationBase.setEnvironment(Environment.SANDBOX)
         }
@@ -110,7 +109,7 @@ class OperadoraClientDefaultImpl(
 
     fun getCreditCardPaymentType(cartaoDeCredito : CartaoDeCredito) : PaymentType {
         val numero = cartaoDeCredito.numero
-        val dataDeVencimento = "$cartaoDeCredito.validade.month.value$cartaoDeCredito.validade.year"
+        val dataDeVencimento = "${cartaoDeCredito.validade.month.value}${cartaoDeCredito.validade.year}"
         val cvv = cartaoDeCredito.cvv
         val creditCard = CreditCardType()
 

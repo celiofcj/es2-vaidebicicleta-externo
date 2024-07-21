@@ -36,5 +36,6 @@ spring:
 vadebicicleta:
   cartao-de-credito:
     operadora:
-      url: ${URL_OPERADORA}
-  usar-servicos-reais: false
+      id: ${OPERADORA_ID}
+      key: ${OPERADORA_KEY}
+  usar-servicos-reais: true
