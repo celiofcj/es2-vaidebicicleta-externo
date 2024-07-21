@@ -42,4 +42,3 @@ vadebicicleta:
     operadora:
       id: ${OPERADORA_ID}
       key: ${OPERADORA_KEY}
-  usar-servicos-reais: true
