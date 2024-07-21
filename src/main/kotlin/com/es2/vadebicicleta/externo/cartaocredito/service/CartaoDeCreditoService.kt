@@ -23,7 +23,7 @@ class CartaoDeCreditoService(val operadoraCartaoDeCreditoClient: OperadoraClient
         try {
             cobrancaResposta = operadoraCartaoDeCreditoClient.enviarCobranca(cartaoDeCredito)
         } catch (externalServiceException: ExternalServiceException) {
-            return StatusPagamentoEnum.PENDENTE
+            return StatusPagamentoEnum.FALHA
         }
 
         return when (cobrancaResposta.status) {
