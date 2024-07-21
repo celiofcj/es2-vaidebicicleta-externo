@@ -6,11 +6,9 @@ import com.es2.vadebicicleta.externo.cobranca.client.AluguelClient
 import com.es2.vadebicicleta.externo.cobranca.model.Cobranca
 import com.es2.vadebicicleta.externo.cobranca.repository.CobrancaRepository
 import com.es2.vadebicicleta.externo.commons.exception.ResourceNotFoundException
-import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
-val logger = KotlinLogging.logger {}
 
 @Service
 class CobrancaService(
@@ -53,7 +51,7 @@ class CobrancaService(
         val horaFinalizacao = LocalDateTime.now()
 
         val cobranca =  Cobranca(
-            ciclista = novaCobranca.ciclista, valor = novaCobranca.valor, status = StatusPagamentoEnum.PENDENTE,
+            ciclista = novaCobranca.ciclista, valor = novaCobranca.valor, status = StatusPagamentoEnum.PAGA,
             horaSolicitacao = horaSolicitacao, horaFinalizacao = horaFinalizacao, filaDeCobranca = true)
 
         return cobrancaRepository.save(cobranca)
