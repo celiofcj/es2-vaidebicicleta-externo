@@ -1,15 +1,20 @@
 package com.es2.vadebicicleta.externo.cartaocredito.client
 
 import com.es2.vadebicicleta.externo.cartaocredito.client.dto.CartaoDeCreditoCobrancaDto
-import com.es2.vadebicicleta.externo.cartaocredito.client.dto.CartaoDeCreditoValidacaoDto
 import com.es2.vadebicicleta.externo.cartaocredito.model.CartaoDeCredito
 import com.es2.vadebicicleta.externo.commons.exception.ExternalServiceException
+import net.authorize.Environment
+import net.authorize.api.contract.v1.*
+import net.authorize.api.controller.CreateTransactionController
+import net.authorize.api.controller.base.ApiOperationBase
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
-import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestOperations
+
+import java.math.BigDecimal
+
 
 interface OperadoraClient {
     fun validarCartaoDeCredito(cartaoDeCredito: CartaoDeCredito) : CartaoDeCreditoValidacao
@@ -20,25 +25,48 @@ interface OperadoraClient {
 class OperadoraClientDefaultImpl(
     val restOperations: RestOperations,
     @Value("\${vadebicicleta.cartao-de-credito.operadora.url}")
-    val urlOperadora: String,
+    val urlOperadora : String,
     @Value("\${vadebicicleta.usar-servicos-reais}")
-    val servicosReais : Boolean
-    ) : OperadoraClient {
+    val servicosReais : Boolean,
+    @Value("\${vadebicicleta.cartao-de-credito.operadora.id}")
+    private val loginId : String,
+    @Value("\${vadebicicleta.cartao-de-credito.operadora.key}")
+    private val transactionKey : String
+) : OperadoraClient {
+
+    init {
+        if(servicosReais) {
+            val merchantAuthenticationType = MerchantAuthenticationType()
+            merchantAuthenticationType.name = loginId
+            merchantAuthenticationType.clientKey = transactionKey
+            ApiOperationBase.setMerchantAuthentication(merchantAuthenticationType)
+            ApiOperationBase.setEnvironment(Environment.SANDBOX)
+        }
+    }
 
     override fun validarCartaoDeCredito(cartaoDeCredito: CartaoDeCredito) : CartaoDeCreditoValidacao {
         if(!servicosReais) {
             return CartaoDeCreditoValidacao(true)
         }
 
-        val response: ResponseEntity<CartaoDeCreditoValidacaoDto> = enviarRequsicaoComCartaoDeCredito(getUrlConsulta(), cartaoDeCredito)
+        val creditCardPayment = getCreditCardPaymentType(cartaoDeCredito)
 
-        if(response.statusCode != HttpStatus.OK) {
-            throw ExternalServiceException(
-                "Conexão com a operadora de cartão de crédito mal sucedida. Código ${response.statusCode}")
+        val transactionType = TransactionTypeEnum.AUTH_ONLY_TRANSACTION.value()
+        val amount = BigDecimal.ZERO
+
+        val response = doRequest(transactionType, creditCardPayment, amount)
+
+        if(response.messages.resultCode != MessageTypeEnum.OK) {
+            throw ExternalServiceException("Erro na integracao com Authorize.Net. ${response.messages.message}")
         }
 
-        return converterResponseValidacao(response.body ?: throw ExternalServiceException(
-            "Erro inesperado na integracação com a operadora de cartão de crédtio (validação): resposta com body null"))
+        val result = response.transactionResponse
+
+        if(!result.responseCode.equals("1") || !result.cvvResultCode.equals("M")) {
+            return CartaoDeCreditoValidacao(false, listOf("Cartao de credito invalido"))
+        }
+
+        return CartaoDeCreditoValidacao(true)
     }
 
     override fun enviarCobranca(cartaoDeCredito: CartaoDeCredito) : CartaoDeCreditoCobrancaResposta {
@@ -47,7 +75,7 @@ class OperadoraClientDefaultImpl(
         }
 
         val response : ResponseEntity<CartaoDeCreditoCobrancaDto> =
-            enviarRequsicaoComCartaoDeCredito(getUrlCobranca(), cartaoDeCredito)
+           ResponseEntity.ok().build()
 
         if(response.statusCode != HttpStatus.OK) {
             throw ExternalServiceException(
@@ -58,27 +86,44 @@ class OperadoraClientDefaultImpl(
             "Erro inesperado na integracação com a operadora de cartão de crédtio (cobrança): resposta com body null"))
     }
 
-    private inline fun <reified T> enviarRequsicaoComCartaoDeCredito(url: String, cartaoDeCredito: CartaoDeCredito) :
-            ResponseEntity<T> {
+    private fun doRequest(
+        transactionType: String?,
+        paymentType: PaymentType,
+        amount: BigDecimal?,
+    ): CreateTransactionResponse {
 
-        try {
-            return restOperations.postForEntity(url, cartaoDeCredito,  T::class.java)
-        } catch (e: RestClientException) {
-            throw ExternalServiceException("Erro na conexão com a operadora de cartão de crédito", e)
-        }
+        val transactionObject = TransactionRequestType()
+        transactionObject.transactionType = transactionType
+        transactionObject.payment = paymentType
+        transactionObject.amount = amount
+
+        val request = CreateTransactionRequest()
+        request.transactionRequest = transactionObject
+
+        val controller = CreateTransactionController(request)
+        controller.execute()
+
+        val response = controller.apiResponse ?: throw ExternalServiceException()
+
+        return response
     }
 
-    private fun getUrlConsulta() = "$urlOperadora/consultar"
+    fun getCreditCardPaymentType(cartaoDeCredito : CartaoDeCredito) : PaymentType {
+        val numero = cartaoDeCredito.numero
+        val dataDeVencimento = "$cartaoDeCredito.validade.month.value$cartaoDeCredito.validade.year"
+        val cvv = cartaoDeCredito.cvv
+        val creditCard = CreditCardType()
 
-    private fun getUrlCobranca() = "$urlOperadora/cobranca"
+        creditCard.cardNumber = numero
+        creditCard.expirationDate = dataDeVencimento
+        creditCard.cardCode = cvv
 
-    private fun converterResponseValidacao(body: CartaoDeCreditoValidacaoDto): CartaoDeCreditoValidacao {
-        return CartaoDeCreditoValidacao(
-            body.valido ?: throw ExternalServiceException(
-            "Erro inesperado na integracação com a operadora de cartão de crédtio: campo \"valido\" null"),
-            body.erros ?: emptyList()
-            )
+        val paymentType = PaymentType()
+        paymentType.creditCard = creditCard
+
+        return paymentType
     }
+
 
     private fun converteResponseCobranca(body: CartaoDeCreditoCobrancaDto) : CartaoDeCreditoCobrancaResposta {
         return CartaoDeCreditoCobrancaResposta(

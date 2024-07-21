@@ -36,5 +36,5 @@ spring:
 vadebicicleta:
   cartao-de-credito:
     operadora:
-      url: "http://localhost:8080"
+      url: ${URL_OPERADORA}
   usar-servicos-reais: false
