@@ -18,7 +18,7 @@ class GlobalExceptionHandler {
     @ExceptionHandler
     fun handleAllUncaughtExceptions(ex: Exception) : ResponseEntity<MensagemErro>{
         val mensagemErro =  MensagemErro("500", "Um erro inesperado aconteceu")
-        logger.error { "$ex ${ex.cause} ${ex.stackTrace}"}
+        logger.error { "$ex  ${ex.message ?: ""} "}
         return ResponseEntity.internalServerError().body(mensagemErro)
     }
 

@@ -102,7 +102,11 @@ class OperadoraClientDefaultImpl(
         val controller = CreateTransactionController(request)
         controller.execute()
 
-        val response = controller.apiResponse ?: throw ExternalServiceException()
+        if(controller.resultCode != MessageTypeEnum.OK) {
+            throw ExternalServiceException("Erro na integração com Authorize.Net.")
+        }
+
+        val response = controller.apiResponse
 
         return response
     }
