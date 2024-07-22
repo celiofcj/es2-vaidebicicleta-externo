@@ -48,8 +48,15 @@ class AuthorizeNetCartaoDeCreditoClient(
         val result = response.transactionResponse ?:
             throw ExternalServiceException("Erro na integracao com Authorize.Net.")
 
+        val erroList = mutableListOf<String>()
         if(!result.responseCode.equals("1")) {
-            return CartaoDeCreditoValidacao(false, listOf("Cartao de credito invalido"))
+            erroList.add("Cartao de credito invalido. Authorize.Net Código ${result.responseCode}")
+        }
+        if(!result.cvvResultCode.equals("M")) {
+            erroList.add("CVV invalido. Authorize.Net Código ${result.cvvResultCode}")
+        }
+        if(erroList.isNotEmpty()) {
+            return CartaoDeCreditoValidacao(false, erroList)
         }
 
         anularTransacao(result.transId)

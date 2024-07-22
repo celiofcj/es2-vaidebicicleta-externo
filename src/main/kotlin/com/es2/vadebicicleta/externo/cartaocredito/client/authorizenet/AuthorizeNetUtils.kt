@@ -10,7 +10,7 @@ import java.time.Instant
 
 fun getCreditCardPaymentType(cartaoDeCredito : CartaoDeCredito) : PaymentType {
     val numero = cartaoDeCredito.numero
-    val dataDeVencimento = "${cartaoDeCredito.validade.month.value}${cartaoDeCredito.validade.year}"
+    val dataDeVencimento = "${cartaoDeCredito.validade.month.value}${cartaoDeCredito.validade.year%100}"
     val cvv = cartaoDeCredito.cvv
     val creditCard = CreditCardType()
 
