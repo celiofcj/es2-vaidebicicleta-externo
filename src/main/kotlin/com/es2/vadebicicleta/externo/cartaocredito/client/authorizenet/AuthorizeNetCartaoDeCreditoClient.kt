@@ -12,6 +12,7 @@ import net.authorize.api.controller.base.ApiOperationBase
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.time.Instant
 
 @Service
 class AuthorizeNetCartaoDeCreditoClient(
@@ -34,12 +35,11 @@ class AuthorizeNetCartaoDeCreditoClient(
         val creditCardPayment = getCreditCardPaymentType(cartaoDeCredito)
         val processingOptions = ProcessingOptions()
         processingOptions.isIsFirstSubsequentAuth = true
-        val validationTransactionLineItem = validationTransactionItem(cartaoDeCredito.numero)
+        val poNumber = "vl${Instant.now().nano}"
 
         val response = doRequest(
             TransactionTypeEnum.AUTH_ONLY_TRANSACTION, creditCardPayment,
-            BigDecimal.valueOf(0.01), processingOptions = processingOptions,
-            arrayOfLineItem = validationTransactionLineItem)
+            BigDecimal.valueOf(0.01), processingOptions = processingOptions, poNumber = poNumber)
 
         if(response.messages?.resultCode == null || response.messages.resultCode != MessageTypeEnum.OK) {
             throw ExternalServiceException("Erro na integracao com Authorize.Net. ${response.messages.message}")
@@ -50,10 +50,10 @@ class AuthorizeNetCartaoDeCreditoClient(
 
         val erroList = mutableListOf<String>()
         if(!result.responseCode.equals("1")) {
-            erroList.add("Cartao de credito invalido. Authorize.Net Código ${result.responseCode}")
+            erroList.add("Cartao de credito invalido")
         }
         if(!result.cvvResultCode.equals("M")) {
-            erroList.add("CVV invalido. Authorize.Net Código ${result.cvvResultCode}")
+            erroList.add("CVV invalido. Authorize.Net")
         }
         if(erroList.isNotEmpty()) {
             return CartaoDeCreditoValidacao(false, erroList)
@@ -85,7 +85,8 @@ class AuthorizeNetCartaoDeCreditoClient(
         refTransId: String? = null,
         purchaseOrderNumber: String? = null,
         processingOptions: ProcessingOptions? = null,
-        arrayOfLineItem: ArrayOfLineItem? = null
+        arrayOfLineItem: ArrayOfLineItem? = null,
+        poNumber: String? = null
     ): CreateTransactionResponse {
 
         val transactionObject = TransactionRequestType()
@@ -96,7 +97,7 @@ class AuthorizeNetCartaoDeCreditoClient(
         transactionObject.poNumber = purchaseOrderNumber
         transactionObject.processingOptions = processingOptions
         transactionObject.lineItems = arrayOfLineItem
-
+        transactionObject.poNumber = poNumber
         val request = CreateTransactionRequest()
         request.transactionRequest = transactionObject
 

@@ -23,23 +23,3 @@ fun getCreditCardPaymentType(cartaoDeCredito : CartaoDeCredito) : PaymentType {
 
     return paymentType
 }
-
-fun validationTransactionItem(numeroCartaoDeCredito: String) : ArrayOfLineItem {
-    val item = LineItemType()
-    item.itemId = "vl$numeroCartaoDeCredito${Instant.now().toEpochMilli()}"
-    item.name = "Validação de cartão de crédito "
-    item.quantity = BigDecimal.ONE
-    item.unitPrice = BigDecimal.valueOf(0.01)
-
-
-    val arrayOfLineItem = object : ArrayOfLineItem() {
-        init {
-            lineItem = mutableListOf()
-        }
-
-        fun addLineItem(item : LineItemType) = lineItem.add(item)
-    }
-
-    arrayOfLineItem.addLineItem(item)
-    return arrayOfLineItem
-}
