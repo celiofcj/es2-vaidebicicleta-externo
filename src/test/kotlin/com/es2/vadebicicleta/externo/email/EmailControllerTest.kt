@@ -3,8 +3,7 @@ package com.es2.vadebicicleta.externo.email
 import com.es2.vadebicicleta.externo.commons.dto.DtoConverter
 import com.es2.vadebicicleta.externo.email.controller.EmailControlller
 import com.es2.vadebicicleta.externo.email.controller.dto.RequisicaoEmailInDto
-import com.es2.vadebicicleta.externo.email.controller.dto.RequisicaoEmailOutDto
-import com.es2.vadebicicleta.externo.email.model.RequisicaoEmail
+import com.es2.vadebicicleta.externo.dominio.RequisicaoEmail
 import com.es2.vadebicicleta.externo.email.service.EmailService
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ninjasquad.springmockk.MockkBean

@@ -1,6 +1,6 @@
 package com.es2.vadebicicleta.externo.cartaocredito.controller.dto
 
-import com.es2.vadebicicleta.externo.cartaocredito.model.CartaoDeCredito
+import com.es2.vadebicicleta.externo.dominio.CartaoDeCredito
 import com.es2.vadebicicleta.externo.commons.dto.DtoConverter
 import com.es2.vadebicicleta.externo.commons.validation.DatePattern
 import jakarta.validation.constraints.NotBlank

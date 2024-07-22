@@ -1,8 +1,8 @@
 package com.es2.vadebicicleta.externo.cobranca
 
-import com.es2.vadebicicleta.externo.cartaocredito.model.StatusPagamentoEnum
+import com.es2.vadebicicleta.externo.dominio.StatusPagamentoEnum
 import com.es2.vadebicicleta.externo.cobranca.controller.CobrancaController
-import com.es2.vadebicicleta.externo.cobranca.model.Cobranca
+import com.es2.vadebicicleta.externo.dominio.Cobranca
 import com.es2.vadebicicleta.externo.cobranca.service.CobrancaService
 import com.es2.vadebicicleta.externo.commons.dto.DtoConverter
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper

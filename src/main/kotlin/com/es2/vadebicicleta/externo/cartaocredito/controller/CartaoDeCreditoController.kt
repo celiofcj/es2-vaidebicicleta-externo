@@ -2,7 +2,7 @@ package com.es2.vadebicicleta.externo.cartaocredito.controller
 
 import com.es2.vadebicicleta.externo.cartaocredito.controller.dto.CartaoDeCreditoInDto
 import com.es2.vadebicicleta.externo.cartaocredito.controller.dto.CartaoDeCreditoOutDto
-import com.es2.vadebicicleta.externo.cartaocredito.model.CartaoDeCredito
+import com.es2.vadebicicleta.externo.dominio.CartaoDeCredito
 import com.es2.vadebicicleta.externo.cartaocredito.service.CartaoDeCreditoService
 import com.es2.vadebicicleta.externo.commons.dto.DtoConverter
 import jakarta.validation.Valid

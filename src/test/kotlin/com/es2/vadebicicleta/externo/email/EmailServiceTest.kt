@@ -1,19 +1,16 @@
 package com.es2.vadebicicleta.externo.email
 
 import com.es2.vadebicicleta.externo.email.client.EmailClient
-import com.es2.vadebicicleta.externo.email.model.RequisicaoEmail
+import com.es2.vadebicicleta.externo.dominio.RequisicaoEmail
 import com.es2.vadebicicleta.externo.email.repository.EmailRepository
 import com.es2.vadebicicleta.externo.email.service.CouldNotSendEmailException
 import com.es2.vadebicicleta.externo.email.service.EmailService
-import com.es2.vadebicicleta.externo.email.service.WrongEmailAdressFormatException
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
-import io.mockk.verifyAll
 import io.mockk.verifyOrder
-import org.junit.experimental.theories.suppliers.TestedOn
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test

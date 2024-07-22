@@ -1,4 +1,4 @@
-package com.es2.vadebicicleta.externo.cartaocredito.model
+package com.es2.vadebicicleta.externo.dominio
 
 import java.time.LocalDate
 

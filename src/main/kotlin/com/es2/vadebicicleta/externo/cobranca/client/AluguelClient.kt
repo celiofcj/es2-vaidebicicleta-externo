@@ -1,6 +1,6 @@
 package com.es2.vadebicicleta.externo.cobranca.client
 
-import com.es2.vadebicicleta.externo.cartaocredito.model.CartaoDeCredito
+import com.es2.vadebicicleta.externo.dominio.CartaoDeCredito
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 

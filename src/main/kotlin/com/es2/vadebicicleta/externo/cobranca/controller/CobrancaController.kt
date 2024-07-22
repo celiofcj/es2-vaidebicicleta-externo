@@ -2,7 +2,7 @@ package com.es2.vadebicicleta.externo.cobranca.controller
 
 import com.es2.vadebicicleta.externo.cobranca.controller.dto.CobrancaInDto
 import com.es2.vadebicicleta.externo.cobranca.controller.dto.CobrancaOutDto
-import com.es2.vadebicicleta.externo.cobranca.model.Cobranca
+import com.es2.vadebicicleta.externo.dominio.Cobranca
 import com.es2.vadebicicleta.externo.cobranca.service.CobrancaService
 import com.es2.vadebicicleta.externo.commons.dto.DtoConverter
 import jakarta.validation.Valid

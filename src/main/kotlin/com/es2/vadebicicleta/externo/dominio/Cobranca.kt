@@ -1,6 +1,5 @@
-package com.es2.vadebicicleta.externo.cobranca.model
+package com.es2.vadebicicleta.externo.dominio
 
-import com.es2.vadebicicleta.externo.cartaocredito.model.StatusPagamentoEnum
 import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue

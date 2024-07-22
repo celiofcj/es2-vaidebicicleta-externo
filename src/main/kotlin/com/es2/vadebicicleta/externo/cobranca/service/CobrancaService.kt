@@ -1,9 +1,9 @@
 package com.es2.vadebicicleta.externo.cobranca.service
 
-import com.es2.vadebicicleta.externo.cartaocredito.model.StatusPagamentoEnum
+import com.es2.vadebicicleta.externo.dominio.StatusPagamentoEnum
 import com.es2.vadebicicleta.externo.cartaocredito.service.CartaoDeCreditoService
 import com.es2.vadebicicleta.externo.cobranca.client.AluguelClient
-import com.es2.vadebicicleta.externo.cobranca.model.Cobranca
+import com.es2.vadebicicleta.externo.dominio.Cobranca
 import com.es2.vadebicicleta.externo.cobranca.repository.CobrancaRepository
 import com.es2.vadebicicleta.externo.commons.exception.ResourceNotFoundException
 import org.springframework.stereotype.Service

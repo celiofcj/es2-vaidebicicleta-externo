@@ -1,6 +1,6 @@
 package com.es2.vadebicicleta.externo.cobranca.controller.dto
 
-import com.es2.vadebicicleta.externo.cobranca.model.Cobranca
+import com.es2.vadebicicleta.externo.dominio.Cobranca
 import com.es2.vadebicicleta.externo.commons.dto.DtoConverter
 import com.es2.vadebicicleta.externo.commons.dto.UnsuportedConversionException
 import jakarta.validation.constraints.Digits

@@ -1,7 +1,7 @@
 package com.es2.vadebicicleta.externo.email.controller.dto
 
 import com.es2.vadebicicleta.externo.commons.dto.DtoConverter
-import com.es2.vadebicicleta.externo.email.model.RequisicaoEmail
+import com.es2.vadebicicleta.externo.dominio.RequisicaoEmail
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotNull
 import org.springframework.stereotype.Component

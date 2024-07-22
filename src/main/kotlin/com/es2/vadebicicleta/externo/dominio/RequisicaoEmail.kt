@@ -1,4 +1,4 @@
-package com.es2.vadebicicleta.externo.email.model
+package com.es2.vadebicicleta.externo.dominio
 
 import jakarta.persistence.*
 

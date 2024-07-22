@@ -1,12 +1,8 @@
 package com.es2.vadebicicleta.externo.cartaocredito.client.authorizenet
 
-import com.es2.vadebicicleta.externo.cartaocredito.model.CartaoDeCredito
-import net.authorize.api.contract.v1.ArrayOfLineItem
+import com.es2.vadebicicleta.externo.dominio.CartaoDeCredito
 import net.authorize.api.contract.v1.CreditCardType
-import net.authorize.api.contract.v1.LineItemType
 import net.authorize.api.contract.v1.PaymentType
-import java.math.BigDecimal
-import java.time.Instant
 
 fun getCreditCardPaymentType(cartaoDeCredito : CartaoDeCredito) : PaymentType {
     val numero = cartaoDeCredito.numero

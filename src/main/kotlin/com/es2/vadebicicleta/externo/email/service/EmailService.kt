@@ -1,7 +1,7 @@
 package com.es2.vadebicicleta.externo.email.service
 
 import com.es2.vadebicicleta.externo.email.client.EmailClient
-import com.es2.vadebicicleta.externo.email.model.RequisicaoEmail
+import com.es2.vadebicicleta.externo.dominio.RequisicaoEmail
 import com.es2.vadebicicleta.externo.email.repository.EmailRepository
 import org.springframework.stereotype.Service
 

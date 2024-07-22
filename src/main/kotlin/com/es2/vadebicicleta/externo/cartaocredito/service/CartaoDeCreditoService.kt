@@ -2,8 +2,8 @@
 
 import com.es2.vadebicicleta.externo.cartaocredito.client.CartaoDeCreditoCobrancaResposta
 import com.es2.vadebicicleta.externo.cartaocredito.client.OperadoraCartaoDeCreditoClient
-import com.es2.vadebicicleta.externo.cartaocredito.model.CartaoDeCredito
-import com.es2.vadebicicleta.externo.cartaocredito.model.StatusPagamentoEnum
+import com.es2.vadebicicleta.externo.dominio.CartaoDeCredito
+import com.es2.vadebicicleta.externo.dominio.StatusPagamentoEnum
 import com.es2.vadebicicleta.externo.commons.exception.ExternalServiceException
 import org.springframework.stereotype.Service
 

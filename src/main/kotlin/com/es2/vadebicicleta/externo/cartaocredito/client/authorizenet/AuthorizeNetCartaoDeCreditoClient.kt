@@ -3,7 +3,7 @@ package com.es2.vadebicicleta.externo.cartaocredito.client.authorizenet
 import com.es2.vadebicicleta.externo.cartaocredito.client.CartaoDeCreditoCobrancaResposta
 import com.es2.vadebicicleta.externo.cartaocredito.client.CartaoDeCreditoValidacao
 import com.es2.vadebicicleta.externo.cartaocredito.client.OperadoraCartaoDeCreditoClient
-import com.es2.vadebicicleta.externo.cartaocredito.model.CartaoDeCredito
+import com.es2.vadebicicleta.externo.dominio.CartaoDeCredito
 import com.es2.vadebicicleta.externo.commons.exception.ExternalServiceException
 import net.authorize.Environment
 import net.authorize.api.contract.v1.*
