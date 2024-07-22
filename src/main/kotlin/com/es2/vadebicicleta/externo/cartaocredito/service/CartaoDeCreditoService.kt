@@ -3,9 +3,9 @@
 import com.es2.vadebicicleta.externo.cartaocredito.client.CartaoDeCreditoCobrancaResposta
 import com.es2.vadebicicleta.externo.cartaocredito.client.OperadoraCartaoDeCreditoClient
 import com.es2.vadebicicleta.externo.dominio.CartaoDeCredito
-import com.es2.vadebicicleta.externo.dominio.StatusPagamentoEnum
-import com.es2.vadebicicleta.externo.commons.exception.ExternalServiceException
+import com.es2.vadebicicleta.externo.dominio.Ciclista
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 
 @Service
 class CartaoDeCreditoService(val operadoraCartaoDeCreditoClient: OperadoraCartaoDeCreditoClient) {
@@ -17,19 +17,9 @@ class CartaoDeCreditoService(val operadoraCartaoDeCreditoClient: OperadoraCartao
         }
     }
 
-    fun enviarCobranca(cartaoDeCredito: CartaoDeCredito) : StatusPagamentoEnum {
-        val cobrancaResposta : CartaoDeCreditoCobrancaResposta
+    fun enviarCobranca(valor: BigDecimal, cartaoDeCredito: CartaoDeCredito, ciclista: Ciclista)
+    : CartaoDeCreditoCobrancaResposta {
 
-        try {
-            cobrancaResposta = operadoraCartaoDeCreditoClient.enviarCobranca(cartaoDeCredito)
-        } catch (externalServiceException: ExternalServiceException) {
-            return StatusPagamentoEnum.FALHA
-        }
-
-        return when (cobrancaResposta.status) {
-            "SUCESSO" -> StatusPagamentoEnum.PAGA
-            "FRACASSO" -> StatusPagamentoEnum.FALHA
-            else -> throw IllegalArgumentException("Status do pagamento inválido")
-        }
+        return operadoraCartaoDeCreditoClient.enviarCobranca(valor, cartaoDeCredito, ciclista)
     }
 }

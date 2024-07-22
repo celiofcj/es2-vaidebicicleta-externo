@@ -7,6 +7,7 @@ import com.es2.vadebicicleta.externo.dominio.Cobranca
 import com.es2.vadebicicleta.externo.cobranca.repository.CobrancaRepository
 import com.es2.vadebicicleta.externo.commons.exception.ResourceNotFoundException
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
 
@@ -17,26 +18,31 @@ class CobrancaService(
     val cobrancaRepository: CobrancaRepository
 ) {
     fun enviarCobranca(novaCobranca: Cobranca) : Cobranca {
-        val horaSolicitacao = LocalDateTime.now();
+        val horaSolicitacao = LocalDateTime.now()
 
-        val valor : Long = when {
-            novaCobranca.valor < 0 -> throw IllegalArgumentException("Valor não pode ser negativo")
-            else -> novaCobranca.valor
+        val valor =
+            if(novaCobranca.valor < BigDecimal.ZERO) throw IllegalArgumentException("Valor não pode ser negativo")
+            else novaCobranca.valor
+
+        val ciclistaId =
+            if(novaCobranca.ciclista < 0) throw IllegalArgumentException("Id do ciclista não pode ser negativo")
+            else novaCobranca.ciclista
+
+        val ciclista = aluguelClient.getCiclista(ciclistaId)
+            ?: throw BrokenRequirementException("Erro ao obter ciclista: $ciclistaId")
+
+        val cartaoDeCredito = aluguelClient.getCartaoDeCredito(ciclistaId)
+            ?: throw BrokenRequirementException("Erro ao obter o cartão de crédito do ciclista: $ciclistaId")
+
+        val cobrancaReposta = cartaoDeCreditoService.enviarCobranca(valor, cartaoDeCredito, ciclista)
+
+        if(cobrancaReposta.status != StatusPagamentoEnum.PAGA) {
+            throw BrokenRequirementException("Não foi possível enviar a cobranca. ${cobrancaReposta.erros}")
         }
-
-        val ciclista : Long = when {
-            novaCobranca.ciclista < 0 -> throw IllegalArgumentException("Id do ciclista não pode ser negativo")
-            else -> novaCobranca.ciclista
-        }
-
-        val cartaoDeCredito = aluguelClient.getCartaoDeCredito(ciclista)
-            ?: throw BrokenRequirementException("Erro ao obter o cartão de crédito do ciclista: $ciclista")
-
-        val statusPagamento = cartaoDeCreditoService.enviarCobranca(cartaoDeCredito)
 
         val horaFinalizacao = LocalDateTime.now()
-        val cobranca = Cobranca(ciclista = ciclista, valor = valor,
-            status = statusPagamento, horaSolicitacao = horaSolicitacao, horaFinalizacao = horaFinalizacao)
+        val cobranca = Cobranca(ciclista = ciclistaId, valor = valor,
+            status = cobrancaReposta.status, horaSolicitacao = horaSolicitacao, horaFinalizacao = horaFinalizacao)
 
         return cobrancaRepository.save(cobranca)
     }
@@ -47,18 +53,18 @@ class CobrancaService(
     }
 
     fun colocarNaFilaDeCobranca(novaCobranca: Cobranca): Cobranca {
-        val horaSolicitacao = LocalDateTime.now();
+        val horaSolicitacao = LocalDateTime.now()
         val horaFinalizacao = LocalDateTime.now()
 
         val cobranca =  Cobranca(
-            ciclista = novaCobranca.ciclista, valor = novaCobranca.valor, status = StatusPagamentoEnum.PAGA,
-            horaSolicitacao = horaSolicitacao, horaFinalizacao = horaFinalizacao, filaDeCobranca = true)
+            ciclista = novaCobranca.ciclista, valor = novaCobranca.valor, status = StatusPagamentoEnum.PENDENTE,
+            horaSolicitacao = horaSolicitacao, horaFinalizacao = horaFinalizacao)
 
         return cobrancaRepository.save(cobranca)
     }
 
     fun processarCobrancasEmFila() : List<Cobranca> {
-        val cobrancasEmfila = cobrancaRepository.findByFilaDeCobrancaTrue()
+        val cobrancasEmfila = cobrancaRepository.findByStatus(StatusPagamentoEnum.PENDENTE)
 
         return cobrancasEmfila.map { cobranca -> enviarCobranca(cobranca) }
     }

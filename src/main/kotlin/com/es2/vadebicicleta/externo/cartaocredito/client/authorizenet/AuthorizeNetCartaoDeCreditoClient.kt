@@ -5,6 +5,8 @@ import com.es2.vadebicicleta.externo.cartaocredito.client.CartaoDeCreditoValidac
 import com.es2.vadebicicleta.externo.cartaocredito.client.OperadoraCartaoDeCreditoClient
 import com.es2.vadebicicleta.externo.dominio.CartaoDeCredito
 import com.es2.vadebicicleta.externo.commons.exception.ExternalServiceException
+import com.es2.vadebicicleta.externo.dominio.Ciclista
+import com.es2.vadebicicleta.externo.dominio.StatusPagamentoEnum
 import net.authorize.Environment
 import net.authorize.api.contract.v1.*
 import net.authorize.api.controller.CreateTransactionController
@@ -20,7 +22,6 @@ class AuthorizeNetCartaoDeCreditoClient(
     private val loginId: String,
     @Value("\${vadebicicleta.cartao-de-credito.operadora.key}")
     private val transactionKey: String,
-    private val authorizeNetMetadataRepository: AuthorizeNetMetadataRepository
 ) : OperadoraCartaoDeCreditoClient {
 
     init {
@@ -33,41 +34,47 @@ class AuthorizeNetCartaoDeCreditoClient(
 
     override fun validarCartaoDeCredito(cartaoDeCredito: CartaoDeCredito) : CartaoDeCreditoValidacao {
         val creditCardPayment = getCreditCardPaymentType(cartaoDeCredito)
-        val processingOptions = ProcessingOptions()
-        processingOptions.isIsFirstSubsequentAuth = true
         val poNumber = "vl${Instant.now().nano}"
 
         val response = doRequest(
             TransactionTypeEnum.AUTH_ONLY_TRANSACTION, creditCardPayment,
-            BigDecimal.valueOf(0.01), processingOptions = processingOptions, poNumber = poNumber)
+            BigDecimal.valueOf(0.01), poNumber = poNumber)
 
-        if(response.messages?.resultCode == null || response.messages.resultCode != MessageTypeEnum.OK) {
-            throw ExternalServiceException("Erro na integracao com Authorize.Net. ${response.messages.message}")
-        }
-
-        val result = response.transactionResponse ?:
-            throw ExternalServiceException("Erro na integracao com Authorize.Net.")
-
-        val erroList = mutableListOf<String>()
-        if(!result.responseCode.equals("1")) {
-            erroList.add("Cartao de credito invalido")
-        }
-        if(!result.cvvResultCode.equals("M")) {
-            erroList.add("CVV invalido. Authorize.Net")
-        }
+        val erroList = errorsResponse(response)
         if(erroList.isNotEmpty()) {
             return CartaoDeCreditoValidacao(false, erroList)
         }
 
-        anularTransacao(result.transId)
+        val result = response.transactionResponse
 
-        persisteMetadata(cartaoDeCredito.numero, result.networkTransId)
+        anularTransacao(result.transId)
 
         return CartaoDeCreditoValidacao(true)
     }
 
-    override fun enviarCobranca(cartaoDeCredito: CartaoDeCredito) : CartaoDeCreditoCobrancaResposta {
-        return CartaoDeCreditoCobrancaResposta("SUCESSO")
+    override fun enviarCobranca(valor: BigDecimal, cartaoDeCredito: CartaoDeCredito, ciclista: Ciclista) :
+            CartaoDeCreditoCobrancaResposta {
+        val creditCardPayment = getCreditCardPaymentType(cartaoDeCredito)
+        val documento = ciclista.cpf ?: ciclista.passaporte?.numero ?: "000000"
+        val poNumber = documento.substring(0, 6) + Instant.now().nano
+
+        val customer = getIndividualCustomer(ciclista)
+
+        val processingOptions = ProcessingOptions()
+        processingOptions.isIsSubsequentAuth = true
+        processingOptions.isIsStoredCredentials = true
+
+        val response = doRequest(
+            TransactionTypeEnum.AUTH_CAPTURE_TRANSACTION, creditCardPayment, valor,
+            poNumber = poNumber, customer = customer
+        )
+
+        val erroList = errorsResponse(response)
+        if(erroList.isNotEmpty()) {
+            return CartaoDeCreditoCobrancaResposta(StatusPagamentoEnum.FALHA, erroList)
+        }
+
+        return CartaoDeCreditoCobrancaResposta(StatusPagamentoEnum.PAGA)
     }
 
     private fun anularTransacao(refTransId: String) {
@@ -83,10 +90,8 @@ class AuthorizeNetCartaoDeCreditoClient(
         paymentType: PaymentType? = null,
         amount: BigDecimal? = null,
         refTransId: String? = null,
-        purchaseOrderNumber: String? = null,
-        processingOptions: ProcessingOptions? = null,
-        arrayOfLineItem: ArrayOfLineItem? = null,
-        poNumber: String? = null
+        poNumber: String? = null,
+        customer: CustomerDataType? = null
     ): CreateTransactionResponse {
 
         val transactionObject = TransactionRequestType()
@@ -94,10 +99,9 @@ class AuthorizeNetCartaoDeCreditoClient(
         transactionObject.payment = paymentType
         transactionObject.amount = amount
         transactionObject.refTransId = refTransId
-        transactionObject.poNumber = purchaseOrderNumber
-        transactionObject.processingOptions = processingOptions
-        transactionObject.lineItems = arrayOfLineItem
         transactionObject.poNumber = poNumber
+        transactionObject.customer = customer
+
         val request = CreateTransactionRequest()
         request.transactionRequest = transactionObject
 
@@ -105,22 +109,6 @@ class AuthorizeNetCartaoDeCreditoClient(
         controller.execute()
 
         return controller.apiResponse ?: throw ExternalServiceException("Erro na integração com Authorize.Net.")
-    }
-
-    private fun persisteMetadata(
-        numeroCartaoDeCredito: String,
-        networkTransId: String,
-    ) {
-        val salvo = authorizeNetMetadataRepository.findByCardNumber(numeroCartaoDeCredito)
-
-        if(salvo != null) {
-            salvo.networkTransId = networkTransId
-            authorizeNetMetadataRepository.save(salvo)
-            return
-        }
-
-        val novo = AuthorizeNetMetadata(numeroCartaoDeCredito, networkTransId)
-        authorizeNetMetadataRepository.save(novo)
     }
 }
 

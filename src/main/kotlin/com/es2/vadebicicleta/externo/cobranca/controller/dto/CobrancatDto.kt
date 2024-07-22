@@ -18,10 +18,10 @@ class CobrancaCoverter : DtoConverter<Cobranca, CobrancaInDto, CobrancaOutDto> {
 
     override fun toObject(inDto: CobrancaInDto): Cobranca {
         if(inDto.valor == null || inDto.ciclista == null) {
-            throw UnsuportedConversionException("Não foi possível converter de CobrancaInDto para Cobranca");
+            throw UnsuportedConversionException("Não foi possível converter de CobrancaInDto para Cobranca")
         }
 
-        val valor = inDto.valor.movePointRight(2).toLong()
+        val valor = inDto.valor
         val ciclista = inDto.ciclista
 
         return Cobranca(ciclista, valor)
@@ -33,7 +33,7 @@ class CobrancaCoverter : DtoConverter<Cobranca, CobrancaInDto, CobrancaOutDto> {
             o.status.toString(),
             o.horaSolicitacao?.format(dateTimeFormatterDefault),
             o.horaFinalizacao?.format(dateTimeFormatterDefault),
-            BigDecimal(o.valor).scaleByPowerOfTen(-2),
+            o.valor,
             o.ciclista
         )
     }
