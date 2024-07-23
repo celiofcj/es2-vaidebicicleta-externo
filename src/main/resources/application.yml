@@ -2,9 +2,6 @@ logging:
   level:
     net.authorize: DEBUG
 
-server:
-  port: 8081
-
 spring:
   application:
     name: externo
