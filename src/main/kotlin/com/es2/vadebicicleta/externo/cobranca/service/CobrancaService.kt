@@ -20,29 +20,13 @@ class CobrancaService(
     fun enviarCobranca(novaCobranca: Cobranca) : Cobranca {
         val horaSolicitacao = LocalDateTime.now()
 
-        require(novaCobranca.valor >= BigDecimal.ZERO) { "Valor não pode ser negativo" }
-        require(novaCobranca.ciclista >= 0)  { "Id do ciclista não pode ser negativo" }
-
-        val valor = novaCobranca.valor
-        val ciclistaId = novaCobranca.ciclista
-
-        val ciclista = aluguelClient.getCiclista(ciclistaId)
-            ?: throw BrokenRequirementException("Erro ao obter ciclista: $ciclistaId")
-
-        val cartaoDeCredito = aluguelClient.getCartaoDeCredito(ciclistaId)
-            ?: throw BrokenRequirementException("Erro ao obter o cartão de crédito do ciclista: $ciclistaId")
-
-        val cobrancaReposta = cartaoDeCreditoService.enviarCobranca(valor, cartaoDeCredito, ciclista)
-
-        if(cobrancaReposta.status != StatusPagamentoEnum.PAGA) {
-            throw BrokenRequirementException("Não foi possível enviar a cobranca. ${cobrancaReposta.erros}")
-        }
-
+        val cobrancaEfetivada = efetivaCobranca(novaCobranca)
         val horaFinalizacao = LocalDateTime.now()
-        val cobranca = Cobranca(ciclista = ciclistaId, valor = valor,
-            status = cobrancaReposta.status, horaSolicitacao = horaSolicitacao, horaFinalizacao = horaFinalizacao)
 
-        return cobrancaRepository.save(cobranca)
+        val cobrancaParaSalvar = Cobranca(cobrancaEfetivada.ciclista, cobrancaEfetivada.valor, id = null,
+            cobrancaEfetivada.status, horaSolicitacao, horaFinalizacao)
+
+        return cobrancaRepository.save(cobrancaParaSalvar)
     }
 
     fun obterCobranca(idCobranca: Long): Cobranca {
@@ -64,6 +48,42 @@ class CobrancaService(
     fun processarCobrancasEmFila() : List<Cobranca> {
         val cobrancasEmfila = cobrancaRepository.findByStatus(StatusPagamentoEnum.PENDENTE)
 
-        return cobrancasEmfila.map { cobranca -> enviarCobranca(cobranca) }
+        return cobrancasEmfila.map { cobranca ->
+            val horaSolicitacao = LocalDateTime.now()
+            val cobrancaEfetivada = efetivaCobranca(cobranca)
+            val horaFinalizacao = LocalDateTime.now()
+            val cobrancaParaSalvar = Cobranca(
+                cobrancaEfetivada.ciclista, cobrancaEfetivada.valor,
+                cobranca.id, cobrancaEfetivada.status, horaSolicitacao, horaFinalizacao
+            )
+            cobrancaRepository.save(cobrancaParaSalvar)
+        }
+    }
+
+    private fun efetivaCobranca(
+        novaCobranca: Cobranca): Cobranca {
+        require(novaCobranca.valor >= BigDecimal.ZERO) { "Valor não pode ser negativo" }
+        require(novaCobranca.ciclista >= 0) { "Id do ciclista não pode ser negativo" }
+
+        val valor = novaCobranca.valor
+        val ciclistaId = novaCobranca.ciclista
+
+        val ciclista = aluguelClient.getCiclista(ciclistaId)
+            ?: throw BrokenRequirementException("Erro ao obter ciclista: $ciclistaId")
+
+        val cartaoDeCredito = aluguelClient.getCartaoDeCredito(ciclistaId)
+            ?: throw BrokenRequirementException("Erro ao obter o cartão de crédito do ciclista: $ciclistaId")
+
+        val cobrancaReposta = cartaoDeCreditoService.enviarCobranca(valor, cartaoDeCredito, ciclista)
+
+        if (cobrancaReposta.status != StatusPagamentoEnum.PAGA) {
+            throw BrokenRequirementException("Não foi possível enviar a cobranca. ${cobrancaReposta.erros}")
+        }
+
+        val cobranca = Cobranca(
+            ciclista = ciclistaId, valor = valor,
+            status = cobrancaReposta.status
+        )
+        return cobranca
     }
 }
