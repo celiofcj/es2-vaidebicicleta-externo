@@ -2,7 +2,7 @@ package com.es2.vadebicicleta.externo.dominio
 
 import java.time.LocalDate
 
-class CartaoDeCredito (
+data class CartaoDeCredito (
     val nomeTitular: String,
     val numero: String,
     val validade: LocalDate,
