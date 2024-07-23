@@ -7,4 +7,4 @@ sudo chkconfig docker on
 
 echo "$DOCKER_PASSWORD" | sudo docker login -u "$DOCKER_USERNAME" --password-stdin
 
-sudo docker run -d -p 8080:8080 fabriciobcv/es2-grupoc-vadebicicleta-externo
+sudo docker run -d --env-file var.env -p 8080:8080 fabriciobcv/es2-grupoc-vadebicicleta-externo

@@ -43,6 +43,18 @@ resource "aws_launch_template" "example_app_lt" {
     APP_IMAGE_URL = local.app_image_url
     COMMIT = local.commit
   }))
+  depends_on = [local_file.env_file]
+}
+
+resource "local_file" "env_file" {
+  content = templatefile("files/var.env.tpl", {
+    MAIL_USERNAME = var.MAIL_USERNAME
+    MAIL_PASSWORD = var.MAIL_PASSWORD
+    URL_OPERADORA = var.URL_OPERADORA
+    OPERADORA_ID = var.OPERADORA_ID
+    OPERADORA_KEY = var.OPERADORA_KEY
+  })
+  filename = "files/var.env"
 }
 
 resource "aws_instance" "example_app" {
