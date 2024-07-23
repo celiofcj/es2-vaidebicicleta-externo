@@ -34,12 +34,12 @@ data class CartaoDeCreditoInDto (
     @field: NotBlank(message = "Não pode ser nulo nem vazio")
     val nomeTitular: String?,
     @field: Pattern(regexp = "^\\d+$", message = "Deve ser numérico")
-    @field: NotNull
+    @field: NotBlank(message = "Não pode ser nulo nem vazio")
     val numero: String?,
-    @field: NotNull
+    @field: NotBlank(message = "Não pode ser nulo nem vazio")
     @field: DatePattern(message = "Deve ser no formato $FORMATO_DATA", pattern = FORMATO_DATA)
     val validade: String?,
-    @field: NotNull
+    @field: NotBlank(message = "Não pode ser nulo nem vazio")
     @field: Pattern(regexp = "^\\d{3,4}$", message = "Deve ser composto por 3 ou 4 números")
     val cvv: String?
 )
