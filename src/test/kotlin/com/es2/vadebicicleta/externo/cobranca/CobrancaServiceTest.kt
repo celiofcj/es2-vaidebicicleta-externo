@@ -69,7 +69,6 @@ class CobrancaServiceTest {
 
         val resultado = cobrancaService.enviarCobranca(novaCobranca)
 
-        assertNotNull(resultado, "Resultado não pode ser nulo")
         verify(exactly = 1) { aluguelClient.getCiclista(1) }
         verify(exactly = 1) { aluguelClient.getCartaoDeCredito(1) }
         verify(exactly = 1) { cartaoDeCreditoService.enviarCobranca(BigDecimal.TEN, cartaoDeCredito, ciclista) }
@@ -108,7 +107,6 @@ class CobrancaServiceTest {
 
         val resultado = cobrancaService.obterCobranca(1L)
 
-        assertNotNull(resultado, "Resultado não pode ser nulo")
         verify(exactly = 1) { cobrancaRepository.findById(1L) }
 
         assertAll("Verificações do resultado",
@@ -157,8 +155,7 @@ class CobrancaServiceTest {
 
         val resultado = cobrancaService.colocarNaFilaDeCobranca(novaCobranca)
 
-        assertNotNull(resultado, "Resultado não pode ser nulo")
-        verify(exactly = 1) { cobrancaRepository.save(any<Cobranca>()) }
+        verify(exactly = 1) { cobrancaRepository.save(any()) }
 
         assertAll("Verificações do resultado",
             { assertEquals(resultado.ciclista, novaCobranca.ciclista, "Id do ciclista deve ser igual ao informado") },
@@ -197,5 +194,15 @@ class CobrancaServiceTest {
         every { cartaoDeCreditoService.enviarCobranca(BigDecimal.TEN, cartaoDeCredito, ciclista) } returns
                 CartaoDeCreditoCobrancaStatus(status = StatusPagamentoEnum.PAGA, erros = null)
         every { cobrancaRepository.save(any()) } returns cobrancaSalva
+
+        val cobrancasProcessadas = cobrancaService.processarCobrancasEmFila()
+
+        verify(exactly = 1) { aluguelClient.getCiclista(1) }
+        verify(exactly = 1) { aluguelClient.getCartaoDeCredito(1) }
+        verify(exactly = 1) { cartaoDeCreditoService.enviarCobranca(BigDecimal.TEN, cartaoDeCredito, ciclista) }
+        verify(exactly = 1) { cobrancaRepository.save(any<Cobranca>()) }
+
+        assert(cobrancasProcessadas.size == 1) { "A lista de cobranças tem um número de elementos diferente de 1" }
+        assert(cobrancasProcessadas.contains(cobrancaSalva)) { "A cobrança salva não está na lista de cobranças processadas." }
     }
 }
