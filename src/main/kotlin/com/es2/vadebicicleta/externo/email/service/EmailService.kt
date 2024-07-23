@@ -1,5 +1,6 @@
 package com.es2.vadebicicleta.externo.email.service
 
+import com.es2.vadebicicleta.externo.commons.exception.ExternalServiceException
 import com.es2.vadebicicleta.externo.email.client.EmailClient
 import com.es2.vadebicicleta.externo.dominio.RequisicaoEmail
 import com.es2.vadebicicleta.externo.email.repository.EmailRepository
@@ -14,7 +15,7 @@ class EmailService (
         try {
             emailClient.enviarEmail(requisicaoEmail)
         } catch (e: Exception) {
-            throw CouldNotSendEmailException("O email não pôde ser enviado. Tente novamente mais tarde.")
+            throw ExternalServiceException("O email não pôde ser enviado. Tente novamente mais tarde.")
         }
 
         return repository.save(requisicaoEmail)

@@ -1,9 +1,9 @@
 package com.es2.vadebicicleta.externo.email
 
+import com.es2.vadebicicleta.externo.commons.exception.ExternalServiceException
 import com.es2.vadebicicleta.externo.email.client.EmailClient
 import com.es2.vadebicicleta.externo.dominio.RequisicaoEmail
 import com.es2.vadebicicleta.externo.email.repository.EmailRepository
-import com.es2.vadebicicleta.externo.email.service.CouldNotSendEmailException
 import com.es2.vadebicicleta.externo.email.service.EmailService
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -70,7 +70,7 @@ class EmailServiceTest {
 
         every { emailClientMock.enviarEmail(requisicao) } throws Exception("Exceção genérica")
 
-        assertThrows<CouldNotSendEmailException> ("A exceção deve ser lançada")
+        assertThrows<ExternalServiceException> ("A exceção deve ser lançada")
         { emailService.enviarEmail(RequisicaoEmail(email, assunto, mensagem)) }
 
         verify { emailClientMock.enviarEmail(requisicao) }

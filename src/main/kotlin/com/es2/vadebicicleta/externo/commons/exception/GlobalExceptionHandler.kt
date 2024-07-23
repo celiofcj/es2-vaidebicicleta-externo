@@ -1,8 +1,6 @@
 package com.es2.vadebicicleta.externo.commons.exception
 
 import com.es2.vadebicicleta.externo.cartaocredito.service.InvalidCreditCardException
-import com.es2.vadebicicleta.externo.email.service.CouldNotSendEmailException
-import com.es2.vadebicicleta.externo.email.service.WrongEmailAdressFormatException
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -39,17 +37,7 @@ class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    fun handleWrongEmailAdressFormatException(ex: WrongEmailAdressFormatException) : ResponseEntity<Collection<MensagemErro>> {
-        val codigo = "422"
-        val mensagem = ex.message ?: ""
-        val mensagensDeErro = listOf<MensagemErro>(MensagemErro(codigo, mensagem))
-
-        logger.error { ex.message }
-        return ResponseEntity.unprocessableEntity().body(mensagensDeErro)
-    }
-
-    @ExceptionHandler
-    fun handleCouldNotSendEmailException(ex: CouldNotSendEmailException) : ResponseEntity<MensagemErro> {
+    fun handleExternalServiceException(ex: ExternalServiceException) : ResponseEntity<MensagemErro> {
         val codigo = "500"
         val mensagem = ex.message ?: ""
         val mensagemErro = MensagemErro(codigo, mensagem)
