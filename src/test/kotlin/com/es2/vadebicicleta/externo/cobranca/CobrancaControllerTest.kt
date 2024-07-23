@@ -20,6 +20,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -53,9 +54,9 @@ class CobrancaControllerTest {
         val horaFinalizacaoDateTime = LocalDateTime.from(DateTimeFormatter.ofPattern(formatoData).parse(horaSolicitacao))
         val valorResposta = 13.49F
 
-        every { mockCobrancaService.enviarCobranca(Cobranca(idCiclista, 1349)) }
+        every { mockCobrancaService.enviarCobranca(Cobranca(idCiclista, BigDecimal.valueOf(13.49))) }
             .returns(
-                Cobranca(idCiclista, 1349, id, status = StatusPagamentoEnum.PAGA,
+                Cobranca(idCiclista, BigDecimal.valueOf(13.49), id, status = StatusPagamentoEnum.PAGA,
                     horaSolicitacaoDateTime, horaFinalizacaoDateTime)
             )
 
