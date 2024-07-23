@@ -1,7 +1,7 @@
 package com.es2.vadebicicleta.externo.cartaocredito.client.authorizenet
 
-import com.es2.vadebicicleta.externo.cartaocredito.client.CartaoDeCreditoCobrancaResposta
-import com.es2.vadebicicleta.externo.cartaocredito.client.CartaoDeCreditoValidacao
+import com.es2.vadebicicleta.externo.dominio.CartaoDeCreditoCobrancaStatus
+import com.es2.vadebicicleta.externo.dominio.CartaoDeCreditoValidacaoStatus
 import com.es2.vadebicicleta.externo.cartaocredito.client.OperadoraCartaoDeCreditoClient
 import com.es2.vadebicicleta.externo.dominio.CartaoDeCredito
 import com.es2.vadebicicleta.externo.commons.exception.ExternalServiceException
@@ -32,7 +32,7 @@ class AuthorizeNetCartaoDeCreditoClient(
         ApiOperationBase.setEnvironment(Environment.SANDBOX)
     }
 
-    override fun validarCartaoDeCredito(cartaoDeCredito: CartaoDeCredito) : CartaoDeCreditoValidacao {
+    override fun validarCartaoDeCredito(cartaoDeCredito: CartaoDeCredito) : CartaoDeCreditoValidacaoStatus {
         val creditCardPayment = getCreditCardPaymentType(cartaoDeCredito)
         val poNumber = "vl${Instant.now().nano}"
 
@@ -42,18 +42,18 @@ class AuthorizeNetCartaoDeCreditoClient(
 
         val erroList = errorsResponse(response)
         if(erroList.isNotEmpty()) {
-            return CartaoDeCreditoValidacao(false, erroList)
+            return CartaoDeCreditoValidacaoStatus(false, erroList)
         }
 
         val result = response.transactionResponse
 
         anularTransacao(result.transId)
 
-        return CartaoDeCreditoValidacao(true)
+        return CartaoDeCreditoValidacaoStatus(true)
     }
 
     override fun enviarCobranca(valor: BigDecimal, cartaoDeCredito: CartaoDeCredito, ciclista: Ciclista) :
-            CartaoDeCreditoCobrancaResposta {
+            CartaoDeCreditoCobrancaStatus {
         val creditCardPayment = getCreditCardPaymentType(cartaoDeCredito)
         val documento = ciclista.cpf ?: ciclista.passaporte?.numero ?: "000000"
         val poNumber = documento.substring(0, 6) + Instant.now().nano
@@ -71,10 +71,10 @@ class AuthorizeNetCartaoDeCreditoClient(
 
         val erroList = errorsResponse(response)
         if(erroList.isNotEmpty()) {
-            return CartaoDeCreditoCobrancaResposta(StatusPagamentoEnum.FALHA, erroList)
+            return CartaoDeCreditoCobrancaStatus(StatusPagamentoEnum.FALHA, erroList)
         }
 
-        return CartaoDeCreditoCobrancaResposta(StatusPagamentoEnum.PAGA)
+        return CartaoDeCreditoCobrancaStatus(StatusPagamentoEnum.PAGA)
     }
 
     private fun anularTransacao(refTransId: String) {
@@ -110,5 +110,48 @@ class AuthorizeNetCartaoDeCreditoClient(
 
         return controller.apiResponse ?: throw ExternalServiceException("Erro na integração com Authorize.Net.")
     }
+}
+
+private fun getCreditCardPaymentType(cartaoDeCredito : CartaoDeCredito) : PaymentType {
+    val numero = cartaoDeCredito.numero
+    val dataDeVencimento = "${cartaoDeCredito.validade.month.value}${cartaoDeCredito.validade.year}"
+    val cvv = cartaoDeCredito.cvv
+    val creditCard = CreditCardType()
+
+    creditCard.cardNumber = numero
+    creditCard.expirationDate = dataDeVencimento
+    creditCard.cardCode = cvv
+
+    val paymentType = PaymentType()
+    paymentType.creditCard = creditCard
+
+    return paymentType
+}
+
+private fun getIndividualCustomer(ciclista: Ciclista) : CustomerDataType {
+    val customer = CustomerDataType()
+    customer.type = CustomerTypeEnum.INDIVIDUAL
+    customer.id = ciclista.id.toString()
+    customer.email = ciclista.email
+
+    return customer
+}
+
+private fun errorsResponse(response: CreateTransactionResponse): MutableList<String> {
+    if (response.messages?.resultCode == null || response.messages.resultCode != MessageTypeEnum.OK) {
+        throw ExternalServiceException("Erro na integracao com Authorize.Net. ${response.messages.message}")
+    }
+
+    val result =
+        response.transactionResponse ?: throw ExternalServiceException("Erro na integracao com Authorize.Net.")
+
+    val erroList = mutableListOf<String>()
+    if (result.responseCode != "1") {
+        erroList.add("Cartao de credito invalido")
+    }
+    if (result.cvvResultCode != "M") {
+        erroList.add("CVV invalido. Authorize.Net")
+    }
+    return erroList
 }
 

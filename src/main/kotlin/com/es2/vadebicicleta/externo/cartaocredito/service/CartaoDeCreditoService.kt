@@ -1,6 +1,6 @@
  package com.es2.vadebicicleta.externo.cartaocredito.service
 
-import com.es2.vadebicicleta.externo.cartaocredito.client.CartaoDeCreditoCobrancaResposta
+import com.es2.vadebicicleta.externo.dominio.CartaoDeCreditoCobrancaStatus
 import com.es2.vadebicicleta.externo.cartaocredito.client.OperadoraCartaoDeCreditoClient
 import com.es2.vadebicicleta.externo.dominio.CartaoDeCredito
 import com.es2.vadebicicleta.externo.dominio.Ciclista
@@ -18,7 +18,7 @@ class CartaoDeCreditoService(val operadoraCartaoDeCreditoClient: OperadoraCartao
     }
 
     fun enviarCobranca(valor: BigDecimal, cartaoDeCredito: CartaoDeCredito, ciclista: Ciclista)
-    : CartaoDeCreditoCobrancaResposta {
+    : CartaoDeCreditoCobrancaStatus {
 
         return operadoraCartaoDeCreditoClient.enviarCobranca(valor, cartaoDeCredito, ciclista)
     }
