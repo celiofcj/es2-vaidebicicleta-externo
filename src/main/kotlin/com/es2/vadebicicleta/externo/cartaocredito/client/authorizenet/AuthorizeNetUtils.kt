@@ -39,10 +39,10 @@ fun errorsResponse(response: CreateTransactionResponse): MutableList<String> {
         response.transactionResponse ?: throw ExternalServiceException("Erro na integracao com Authorize.Net.")
 
     val erroList = mutableListOf<String>()
-    if (!result.responseCode.equals("1")) {
+    if (result.responseCode != "1") {
         erroList.add("Cartao de credito invalido")
     }
-    if (!result.cvvResultCode.equals("M")) {
+    if (result.cvvResultCode != "M") {
         erroList.add("CVV invalido. Authorize.Net")
     }
     return erroList

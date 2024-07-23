@@ -43,7 +43,6 @@ class CobrancaControllerTest {
     fun testeRealizarCobrancaSucesso() {
 
         val valor = 13.49F
-        val valorLong = 1349L
         val idCiclista = 39L
 
         val id = 126L

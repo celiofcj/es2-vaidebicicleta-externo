@@ -20,13 +20,11 @@ class CobrancaService(
     fun enviarCobranca(novaCobranca: Cobranca) : Cobranca {
         val horaSolicitacao = LocalDateTime.now()
 
-        val valor =
-            if(novaCobranca.valor < BigDecimal.ZERO) throw IllegalArgumentException("Valor não pode ser negativo")
-            else novaCobranca.valor
+        require(novaCobranca.valor >= BigDecimal.ZERO) { "Valor não pode ser negativo" }
+        require(novaCobranca.ciclista >= 0)  { "Id do ciclista não pode ser negativo" }
 
-        val ciclistaId =
-            if(novaCobranca.ciclista < 0) throw IllegalArgumentException("Id do ciclista não pode ser negativo")
-            else novaCobranca.ciclista
+        val valor = novaCobranca.valor
+        val ciclistaId = novaCobranca.ciclista
 
         val ciclista = aluguelClient.getCiclista(ciclistaId)
             ?: throw BrokenRequirementException("Erro ao obter ciclista: $ciclistaId")
