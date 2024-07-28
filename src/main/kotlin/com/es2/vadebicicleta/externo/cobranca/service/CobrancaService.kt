@@ -68,10 +68,10 @@ class CobrancaService(
         val ciclistaId = novaCobranca.ciclista
 
         val ciclista = aluguelClient.getCiclista(ciclistaId)
-            ?: throw BrokenRequirementException("Erro ao obter ciclista: $ciclistaId")
+            ?: throw ResourceNotFoundException("Erro ao obter ciclista: $ciclistaId")
 
         val cartaoDeCredito = aluguelClient.getCartaoDeCredito(ciclistaId)
-            ?: throw BrokenRequirementException("Erro ao obter o cartão de crédito do ciclista: $ciclistaId")
+            ?: throw ResourceNotFoundException("Erro ao obter o cartão de crédito do ciclista: $ciclistaId")
 
         val cobrancaReposta = cartaoDeCreditoService.enviarCobranca(valor, cartaoDeCredito, ciclista)
 
