@@ -60,8 +60,7 @@ class CobrancaService(
         }
     }
 
-    private fun efetivaCobranca(
-        novaCobranca: Cobranca): Cobranca {
+    private fun efetivaCobranca(novaCobranca: Cobranca): Cobranca {
         require(novaCobranca.valor >= BigDecimal.ZERO) { "Valor não pode ser negativo" }
         require(novaCobranca.ciclista >= 0) { "Id do ciclista não pode ser negativo" }
 
@@ -75,10 +74,6 @@ class CobrancaService(
             ?: throw BrokenRequirementException("Erro ao obter o cartão de crédito do ciclista: $ciclistaId")
 
         val cobrancaReposta = cartaoDeCreditoService.enviarCobranca(valor, cartaoDeCredito, ciclista)
-
-        if (cobrancaReposta.status != StatusPagamentoEnum.PAGA) {
-            throw BrokenRequirementException("Não foi possível enviar a cobranca. ${cobrancaReposta.erros}")
-        }
 
         val cobranca = Cobranca(
             ciclista = ciclistaId, valor = valor,
