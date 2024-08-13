@@ -28,9 +28,9 @@ class RestTemplateLogger : ClientHttpRequestInterceptor {
     @Throws(IOException::class)
     private fun traceRequest(request: HttpRequest, body: ByteArray) {
         logger.debug{"===========================request begin================================================"}
-        logger.debug{"URI         : $request.uri"}
-        logger.debug{"Method      : $request.method"}
-        logger.debug{"Headers     : $request.headers"}
+        logger.debug{"URI         : ${request.uri}"}
+        logger.debug{"Method      : ${request.method}"}
+        logger.debug{"Headers     : ${request.headers}"}
         logger.debug{"Request body: ${String(body, charset("UTF-8"))}"}
         logger.debug{"==========================request end================================================"}
     }
@@ -42,14 +42,13 @@ class RestTemplateLogger : ClientHttpRequestInterceptor {
         var line = bufferedReader.readLine()
         while (line != null) {
             inputStringBuilder.append(line)
-            inputStringBuilder.append('\n')
             line = bufferedReader.readLine()
         }
         logger.debug{"============================response begin=========================================="}
-        logger.debug{"Status code  : $response.statusCode"}
-        logger.debug{"Status text  : $response.statusText"}
-        logger.debug{"Headers      : $response.headers"}
-        logger.debug{"Response body: $inputStringBuilder"}
+        logger.debug{"Status code  : ${response.statusCode}"}
+        logger.debug{"Status text  : ${response.statusText}"}
+        logger.debug{"Headers      : ${response.headers}"}
+        logger.debug{"Response body: $inputStringBuilder}"}
         logger.debug{"=======================response end================================================="}
     }
 }
