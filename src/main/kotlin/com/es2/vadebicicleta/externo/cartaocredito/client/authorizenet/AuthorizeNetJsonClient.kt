@@ -15,8 +15,6 @@ import org.springframework.web.client.postForEntity
 import java.math.BigDecimal
 import java.time.Instant
 
-private val logger = KotlinLogging.logger {}
-
 @Service
 class AuthorizeNetJsonClient(private val authorizeNetConfig: AuthorizeNetConfig, private val restTemplate: RestTemplate)
     : OperadoraCartaoDeCreditoClient {
