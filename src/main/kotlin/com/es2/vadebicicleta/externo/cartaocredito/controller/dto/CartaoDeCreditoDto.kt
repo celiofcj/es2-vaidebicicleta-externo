@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Pattern
 import org.springframework.stereotype.Component
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 
 private const val FORMATO_DATA = "yyyy-MM-dd"
@@ -20,7 +21,11 @@ class CartaoDeCreditoConverter : DtoConverter<CartaoDeCredito, CartaoDeCreditoIn
     override fun toObject(inDto: CartaoDeCreditoInDto) : CartaoDeCredito {
         val nomeTitular = inDto.nomeTitular ?: ""
         val assunto = inDto.numero ?: ""
-        val validade = LocalDate.from(dateTimeFormatterDefault.parse(inDto.validade)) ?: LocalDate.EPOCH
+        val validade = try {
+            LocalDate.from(dateTimeFormatterDefault.parse(inDto.validade.toString())) ?: LocalDate.EPOCH
+        } catch(e: DateTimeParseException) {
+            LocalDate.EPOCH
+        }
         val cvv = inDto.cvv ?: ""
 
         return CartaoDeCredito(nomeTitular, assunto, validade, cvv)
