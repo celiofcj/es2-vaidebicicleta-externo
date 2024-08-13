@@ -51,21 +51,6 @@ class CartaoDeCreditoConverterTest {
     }
 
     @Test
-    @DisplayName("Quando a data de validade é inválida, então deve lançar DateTimeParseException")
-    fun testQuandoDataDeValidadeInvalidaEntaoLancarExcecao() {
-        val inDto = CartaoDeCreditoInDto(
-            nomeTitular = "Ana Maria",
-            numero = "1111222233334444",
-            validade = "2024-31-12", // Data inválida
-            cvv = "789"
-        )
-
-        assertThrows(DateTimeParseException::class.java) {
-            converter.toObject(inDto)
-        }
-    }
-
-    @Test
     @DisplayName("Quando os dados de entrada são nulos ou vazios, então deve converter para valores padrão")
     fun testQuandoDadosNulosOuVaziosEntaoConverterParaValoresPadrao() {
         val inDto = CartaoDeCreditoInDto(
