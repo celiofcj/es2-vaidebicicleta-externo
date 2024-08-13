@@ -1,5 +1,6 @@
 logging:
   level:
+    com.es2.vadebicicleta: DEBUG
     net.authorize: DEBUG
 
 spring:

@@ -3,22 +3,22 @@ package com.es2.vadebicicleta.externo.cartaocredito.client.authorizenet.dominio.
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class TransactionResponse(
-    val responseCode: String?,
-    val authCode: String?,
-    val avsResultCode: String?,
-    val cvvResultCode: String?,
-    val cavvResultCode: String?,
-    val transId: String?,
-    val refTransID: String?,
-    val transHash: String?,
-    val testRequest: String?,
-    val accountNumber: String?,
-    val accountType: String?,
-    val messages: Messages?,
-    val errors: List<ErrorDetail?>?,
-    val transHashSha2: String?,
+    val responseCode: String? = null,
+    val authCode: String? = null,
+    val avsResultCode: String? = null,
+    val cvvResultCode: String? = null,
+    val cavvResultCode: String? = null,
+    val transId: String? = null,
+    val refTransID: String? = null,
+    val transHash: String? = null,
+    val testRequest: String? = null,
+    val accountNumber: String? = null,
+    val accountType: String? = null,
+    val messages: List<Message?>? = null,
+    val errors: List<ErrorDetail?>? = null,
+    val transHashSha2: String? = null,
     @JsonProperty("SupplementalDataQualificationIndicator")
-    val supplementalDataQualificationIndicator: Int?,
-    val networkTransId: String?
+    val supplementalDataQualificationIndicator: Int? = null,
+    val networkTransId: String? = null
 
 )

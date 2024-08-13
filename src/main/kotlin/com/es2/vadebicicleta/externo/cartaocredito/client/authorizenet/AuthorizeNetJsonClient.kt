@@ -47,8 +47,6 @@ class AuthorizeNetJsonClient(private val authorizeNetConfig: AuthorizeNetConfig,
         val response : ResponseEntity<CreateTransactionResponse> =
             restTemplate.postForEntity(authorizeNetConfig.url, body)
 
-        logger.info { response.body }
-
         return CartaoDeCreditoValidacaoStatus(true)
     }
 
