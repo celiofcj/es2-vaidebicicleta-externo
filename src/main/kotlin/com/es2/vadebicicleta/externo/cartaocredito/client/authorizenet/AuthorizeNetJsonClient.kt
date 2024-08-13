@@ -6,7 +6,6 @@ import com.es2.vadebicicleta.externo.cartaocredito.client.authorizenet.dominio.r
 import com.es2.vadebicicleta.externo.cartaocredito.client.authorizenet.dominio.response.TransactionResponse
 import com.es2.vadebicicleta.externo.commons.exception.ExternalServiceException
 import com.es2.vadebicicleta.externo.dominio.*
-import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
@@ -16,9 +15,12 @@ import java.math.BigDecimal
 import java.time.Instant
 
 @Service
-class AuthorizeNetJsonClient(private val authorizeNetConfig: AuthorizeNetConfig, private val restTemplate: RestTemplate)
-    : OperadoraCartaoDeCreditoClient {
-
+class AuthorizeNetJsonClient(
+    private val authorizeNetConfig: AuthorizeNetConfig,
+    private val restTemplate: RestTemplate) : OperadoraCartaoDeCreditoClient {
+    private final val MENSAGEM_ERRO_PADRAO = "Erro na integracao com Authorize.Net."
+        
+        
     override fun validarCartaoDeCredito(cartaoDeCredito: CartaoDeCredito): CartaoDeCreditoValidacaoStatus {
         val creditCard = CreditCard(cartaoDeCredito)
         val poNumber = "vl${Instant.now().nano}"
@@ -40,12 +42,12 @@ class AuthorizeNetJsonClient(private val authorizeNetConfig: AuthorizeNetConfig,
         val responseBody = request(transactionRequest)
 
         val errosDeValidacao = verificaErrosDeValidacao(responseBody.transactionResponse
-            ?: throw ExternalServiceException("Erro na integracao com Authorize.Net."))
+            ?: throw ExternalServiceException(MENSAGEM_ERRO_PADRAO))
 
         if(errosDeValidacao.isNotEmpty()) return CartaoDeCreditoValidacaoStatus(false, errosDeValidacao)
 
         anularTransacao(responseBody.transactionResponse.transId ?:
-            throw ExternalServiceException("Erro na integracao com Authorize.Net."))
+            throw ExternalServiceException(MENSAGEM_ERRO_PADRAO))
 
         return CartaoDeCreditoValidacaoStatus(true)
     }
@@ -78,7 +80,7 @@ class AuthorizeNetJsonClient(private val authorizeNetConfig: AuthorizeNetConfig,
         val responseBody = request(transactionRequest)
 
         val errosDeValidacao = verificaErrosDeValidacao(responseBody.transactionResponse
-            ?: throw ExternalServiceException("Erro na integracao com Authorize.Net."))
+            ?: throw ExternalServiceException(MENSAGEM_ERRO_PADRAO))
 
         if(errosDeValidacao.isNotEmpty()) return CartaoDeCreditoCobrancaStatus(StatusPagamentoEnum.FALHA, errosDeValidacao)
 
@@ -107,11 +109,11 @@ class AuthorizeNetJsonClient(private val authorizeNetConfig: AuthorizeNetConfig,
             restTemplate.postForEntity(authorizeNetConfig.url, requestBody)
 
         if (response.statusCode != HttpStatus.OK) throw ExternalServiceException(
-            "Erro na integracao com Authorize.Net." +
+            MENSAGEM_ERRO_PADRAO +
                     " HTTP Status code inesperado: ${response.statusCode}"
         )
 
-        val responseBody = response.body ?: throw ExternalServiceException("Erro na integracao com Authorize.Net.")
+        val responseBody = response.body ?: throw ExternalServiceException(MENSAGEM_ERRO_PADRAO)
 
         return responseBody
     }
