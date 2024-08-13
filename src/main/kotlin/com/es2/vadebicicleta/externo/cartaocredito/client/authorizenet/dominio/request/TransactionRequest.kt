@@ -5,11 +5,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import java.math.BigDecimal
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder(value = ["transactionType", "amount", "payment", "poNumber"])
+@JsonPropertyOrder(value = ["transactionType", "amount", "payment", "poNumber", "customer", "refTransId"])
 data class TransactionRequest(
     val transactionType: TransactionType,
     val amount: BigDecimal? = null,
     val payment: Payment? = null,
     val poNumber: String? = null,
+    val customer: Customer? = null,
     val refTransId: String? = null,
 )

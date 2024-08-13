@@ -5,15 +5,15 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
 
 @JsonSerialize(using = ToStringBasedEnumSerializer::class)
 enum class TransactionType {
+    AUTH_CAPTURE_TRANSACTION,
     AUTH_ONLY_TRANSACTION,
-    AUTH_CREDIT_CARD,
-    CAPTURE_PREV_AUTH_CREDIT_CARD,
+    PRIOR_AUTH_CAPTURE_TRANSACTION,
     VOID_TRANSACTION;
 
     override fun toString() = when(this) {
-        AUTH_ONLY_TRANSACTION -> "authCaptureTransaction"
-        AUTH_CREDIT_CARD -> "authOnlyTransaction"
-        CAPTURE_PREV_AUTH_CREDIT_CARD -> "priorAuthCaptureTransaction"
+        AUTH_CAPTURE_TRANSACTION -> "authCaptureTransaction"
+        AUTH_ONLY_TRANSACTION -> "authOnlyTransaction"
+        PRIOR_AUTH_CAPTURE_TRANSACTION -> "priorAuthCaptureTransaction"
         VOID_TRANSACTION -> "voidTransaction"
     }
 }

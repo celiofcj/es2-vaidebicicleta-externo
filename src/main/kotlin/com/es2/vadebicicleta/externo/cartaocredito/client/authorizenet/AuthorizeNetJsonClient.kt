@@ -3,15 +3,10 @@ package com.es2.vadebicicleta.externo.cartaocredito.client.authorizenet
 import com.es2.vadebicicleta.externo.cartaocredito.client.OperadoraCartaoDeCreditoClient
 import com.es2.vadebicicleta.externo.cartaocredito.client.authorizenet.dominio.request.*
 import com.es2.vadebicicleta.externo.cartaocredito.client.authorizenet.dominio.response.CreateTransactionResponse
-import com.es2.vadebicicleta.externo.cartaocredito.client.authorizenet.dominio.response.ErrorDetail
 import com.es2.vadebicicleta.externo.cartaocredito.client.authorizenet.dominio.response.TransactionResponse
 import com.es2.vadebicicleta.externo.commons.exception.ExternalServiceException
-import com.es2.vadebicicleta.externo.dominio.CartaoDeCredito
-import com.es2.vadebicicleta.externo.dominio.CartaoDeCreditoCobrancaStatus
-import com.es2.vadebicicleta.externo.dominio.CartaoDeCreditoValidacaoStatus
-import com.es2.vadebicicleta.externo.dominio.Ciclista
+import com.es2.vadebicicleta.externo.dominio.*
 import io.github.oshai.kotlinlogging.KotlinLogging
-import net.authorize.api.MessageTypeEnum
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
@@ -34,7 +29,7 @@ class AuthorizeNetJsonClient(private val authorizeNetConfig: AuthorizeNetConfig,
             TransactionType.AUTH_ONLY_TRANSACTION,
             BigDecimal.valueOf(0.01),
             Payment(creditCard),
-            poNumber = poNumber,
+            poNumber,
         )
 
         val authentication = merchantAuthentication()
@@ -62,7 +57,34 @@ class AuthorizeNetJsonClient(private val authorizeNetConfig: AuthorizeNetConfig,
         cartaoDeCredito: CartaoDeCredito,
         ciclista: Ciclista,
     ): CartaoDeCreditoCobrancaStatus {
-        TODO("Not yet implemented")
+        val creditCard = CreditCard(cartaoDeCredito)
+        val documento = ciclista.cpf ?: ciclista.passaporte?.numero ?: "000000"
+        val poNumber = documento.substring(0, 6) + Instant.now().nano
+        val customer = Customer(ciclista.id.toString(), CustomerType.INDIVIDUAL, ciclista.email)
+
+        val transactionObject = TransactionRequest(
+            TransactionType.AUTH_CAPTURE_TRANSACTION,
+            valor,
+            Payment(creditCard),
+            poNumber,
+            customer
+        )
+
+        val authentication = merchantAuthentication()
+
+        val transactionRequest = CreateTransactionRequest(
+            authentication,
+            transactionObject
+        )
+
+        val responseBody = request(transactionRequest)
+
+        val errosDeValidacao = verificaErrosDeValidacao(responseBody.transactionResponse
+            ?: throw ExternalServiceException("Erro na integracao com Authorize.Net."))
+
+        if(errosDeValidacao.isNotEmpty()) return CartaoDeCreditoCobrancaStatus(StatusPagamentoEnum.FALHA, errosDeValidacao)
+
+        return CartaoDeCreditoCobrancaStatus(StatusPagamentoEnum.PAGA)
     }
 
     private fun anularTransacao(transId: String) {
@@ -79,13 +101,6 @@ class AuthorizeNetJsonClient(private val authorizeNetConfig: AuthorizeNetConfig,
         )
 
         request(transactionRequest)
-    }
-
-    private fun merchantAuthentication(): MerchantAuthentication {
-        return MerchantAuthentication(
-            authorizeNetConfig.id,
-            authorizeNetConfig.key
-        )
     }
 
     private fun request(transactionRequest: CreateTransactionRequest): CreateTransactionResponse {
@@ -118,5 +133,12 @@ class AuthorizeNetJsonClient(private val authorizeNetConfig: AuthorizeNetConfig,
         }
 
         return erroList.toList()
+    }
+
+    private fun merchantAuthentication(): MerchantAuthentication {
+        return MerchantAuthentication(
+            authorizeNetConfig.id,
+            authorizeNetConfig.key
+        )
     }
 }
