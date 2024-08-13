@@ -8,7 +8,8 @@ import java.math.BigDecimal
 @JsonPropertyOrder(value = ["transactionType", "amount", "payment", "poNumber"])
 data class TransactionRequest(
     val transactionType: TransactionType,
-    val amount: BigDecimal,
-    val payment: Payment,
-    val poNumber: String? = null
+    val amount: BigDecimal? = null,
+    val payment: Payment? = null,
+    val poNumber: String? = null,
+    val refTransId: String? = null,
 )
