@@ -55,9 +55,10 @@ jobs:
       TF_VAR_DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       TF_VAR_MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
       TF_VAR_MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
-      TF_VAR_URL_OPERADORA: ${{ vars.URL_OPERADORA }}
+      TF_VAR_OPERADORA_URL: ${{ vars.OPERADORA_URL }}
       TF_VAR_OPERADORA_ID: ${{ secrets.OPERADORA_ID }}
       TF_VAR_OPERADORA_KEY: ${{ secrets.OPERADORA_KEY }}
+      TF_VAR_ALUGUEL_URL: ${{secrets.ALUGUEL_URL}}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2

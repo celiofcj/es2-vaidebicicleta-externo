@@ -5,6 +5,7 @@ variable "MAIL_PASSWORD" {default = ""}
 variable "OPERADORA_URL" {default = ""}
 variable "OPERADORA_ID" {default = ""}
 variable "OPERADORA_KEY" {default = ""}
+variable "ALUGUEL_URL" {default = ""}
 
 variable "commit" {default = ""}
 

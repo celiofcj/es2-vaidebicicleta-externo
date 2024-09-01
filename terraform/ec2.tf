@@ -44,9 +44,10 @@ resource "aws_launch_template" "example_app_lt" {
     COMMIT = local.commit
     MAIL_USERNAME = var.MAIL_USERNAME
     MAIL_PASSWORD = var.MAIL_PASSWORD
-    URL_OPERADORA = var.URL_OPERADORA
+    OPERADORA_URL = var.OPERADORA_URL
     OPERADORA_ID = var.OPERADORA_ID
     OPERADORA_KEY = var.OPERADORA_KEY
+    ALUGUEL_URL = var.ALUGUEL_URL
   }))
 }
 
