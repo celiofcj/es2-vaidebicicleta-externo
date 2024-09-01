@@ -2,7 +2,7 @@ variable "DOCKER_USERNAME" {default = ""}
 variable "DOCKER_PASSWORD" {default = ""}
 variable "MAIL_USERNAME" {default = ""}
 variable "MAIL_PASSWORD" {default = ""}
-variable "URL_OPERADORA" {default = ""}
+variable "OPERADORA_URL" {default = ""}
 variable "OPERADORA_ID" {default = ""}
 variable "OPERADORA_KEY" {default = ""}
 
