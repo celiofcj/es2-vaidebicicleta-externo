@@ -61,7 +61,7 @@ class CartaoDeCreditoServiceTest {
     @DisplayName("Quando enviar cobrança, deve retornar o status correto")
     fun quandoEnviarCobrancaDeveRetornarStatusCorreto() {
         val cartaoDeCredito = CartaoDeCredito("Ciclista Teste", "1234567890123456", LocalDate.of(2025, 3, 1), "123")
-        val ciclista = Ciclista(1, "ATIVO", "Ciclista Teste", LocalDate.of(2001, 4, 1), "BRASILEIRO", "email@email.com", "", "11111111111")
+        val ciclista = Ciclista(1, "11111111111", null, "email@email.com")
         val valor = BigDecimal.TEN
         val cobrancaStatus = CartaoDeCreditoCobrancaStatus(StatusPagamentoEnum.PAGA)
 

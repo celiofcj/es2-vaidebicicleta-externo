@@ -7,11 +7,10 @@ import com.es2.vadebicicleta.externo.commons.exception.ExternalServiceException
 import com.es2.vadebicicleta.externo.dominio.CartaoDeCredito
 import com.es2.vadebicicleta.externo.dominio.Ciclista
 import com.es2.vadebicicleta.externo.dominio.StatusPagamentoEnum
-import io.mockk.*
+import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -103,10 +102,7 @@ class AuthorizeNetCartaoDeCreditoClientTest {
     fun testEnviarCobrancaSuccess() {
         val valor = BigDecimal.valueOf(100.00)
         val cartaoDeCredito = CartaoDeCredito("Celio Celio","3088000000000017", LocalDate.of(2024, 12, 15), "123")
-        val ciclista = Ciclista(
-            1, "ATIVO", "Ciclista Teste",
-            LocalDate.of(2001, 4, 1), nacionalidade = "BRASILEIRO", "email@email.com",
-            "", "11111111111")
+        val ciclista = Ciclista(1, "11111111111", null, "email@email.com")
         val response = successoResponse()
 
         val url = authorizeNetConfig.url
@@ -123,10 +119,7 @@ class AuthorizeNetCartaoDeCreditoClientTest {
     fun testEnviarCobrancaFailure() {
         val valor = BigDecimal.valueOf(100.00)
         val cartaoDeCredito = CartaoDeCredito("Celio Celio","3088000000000017", LocalDate.of(2024, 12, 15), "123")
-        val ciclista = Ciclista(
-            1, "ATIVO", "Ciclista Teste",
-            LocalDate.of(2001, 4, 1), nacionalidade = "BRASILEIRO", "email@email.com",
-            "", "11111111111")
+        val ciclista = Ciclista(1, "11111111111", null, "email@email.com")
         val response = responseCVVInvalido()
 
         val url = authorizeNetConfig.url
@@ -147,10 +140,7 @@ class AuthorizeNetCartaoDeCreditoClientTest {
     fun testEnviarCobrancaCartaoVencido() {
         val valor = BigDecimal.valueOf(100.00)
         val cartaoDeCredito = CartaoDeCredito("Celio Celio", "3088000000000017", LocalDate.of(2022, 12, 15), "123")
-        val ciclista = Ciclista(
-            1, "ATIVO", "Ciclista Teste",
-            LocalDate.of(2001, 4, 1), nacionalidade = "BRASILEIRO", "email@email.com",
-            "", "11111111111")
+        val ciclista = Ciclista(1, "11111111111", null, "email@email.com")
         val response = responseVencido()
 
         val url = authorizeNetConfig.url
@@ -181,10 +171,7 @@ class AuthorizeNetCartaoDeCreditoClientTest {
     @DisplayName("Quando o status da resposta não é OK, então deve lançar ExternalServiceException")
     fun testRequestLancaExceptionHttpStatusDiferenteDeOk() {
         val cartaoDeCredito = CartaoDeCredito("Celio Celio", "3088000000000017", LocalDate.of(2024, 12, 15), "123")
-        val ciclista = Ciclista(
-            1, "ATIVO", "Ciclista Teste",
-            LocalDate.of(2001, 4, 1), nacionalidade = "BRASILEIRO", "email@email.com",
-            "", "11111111111")
+        val ciclista = Ciclista(1, "11111111111", null, "email@email.com")
         val valor = BigDecimal.valueOf(100.00)
         val responseEntity = ResponseEntity<CreateTransactionResponse>(null, HttpStatus.INTERNAL_SERVER_ERROR)
 
@@ -203,10 +190,7 @@ class AuthorizeNetCartaoDeCreditoClientTest {
     @DisplayName("Quando o corpo da resposta é nulo, então deve lançar ExternalServiceException")
     fun testRequestLancaExceptionResponseBodyNulo() {
         val cartaoDeCredito = CartaoDeCredito("Celio Celio", "3088000000000017", LocalDate.of(2024, 12, 15), "123")
-        val ciclista = Ciclista(
-            1, "ATIVO", "Ciclista Teste",
-            LocalDate.of(2001, 4, 1), nacionalidade = "BRASILEIRO", "email@email.com",
-            "", "11111111111")
+        val ciclista = Ciclista(1, "11111111111", null, "email@email.com")
         val valor = BigDecimal.valueOf(100.00)
         val responseEntity = ResponseEntity<CreateTransactionResponse>(null, HttpStatus.OK)
 

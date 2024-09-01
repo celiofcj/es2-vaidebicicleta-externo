@@ -41,3 +41,5 @@ vadebicicleta:
       url: ${OPERADORA_URL}
       id: ${OPERADORA_ID}
       key: ${OPERADORA_KEY}
+  aluguel:
+    url: ${ALUGUEL_URL}

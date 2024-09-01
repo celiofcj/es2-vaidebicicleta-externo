@@ -41,11 +41,7 @@ class CobrancaServiceTest {
     @DisplayName("Quando enviar uma cobrança com valores válidos, salva a cobrança")
     fun quandoEnviarUmaCobrancaComValoresValidosSalvaACobranca() {
         val novaCobranca = Cobranca(ciclista = 1, valor = BigDecimal.TEN)
-        val ciclista = Ciclista(
-            1, "ATIVO", "Ciclista Teste",
-            LocalDate.of(2001, 4, 1), nacionalidade = "BRASILEIRO", "email@email.com",
-            "", "11111111111"
-        )
+        val ciclista = Ciclista(1, "11111111111", null, "email@email.com")
         val cartaoDeCredito = CartaoDeCredito(
             "Ciclista Teste", "1234567890123456",
             LocalDate.of(2025, 3, 1), "123"
@@ -182,11 +178,7 @@ class CobrancaServiceTest {
             "Ciclista Teste", "1234567890123456",
             LocalDate.of(2025, 3, 1), "123"
         )
-        val ciclista = Ciclista(
-            1, "ATIVO", "Ciclista Teste",
-            LocalDate.of(2001, 4, 1), nacionalidade = "BRASILEIRO", "email@email.com",
-            "", "11111111111"
-        )
+        val ciclista = Ciclista(1, "11111111111", null, "email@email.com")
 
         every { cobrancaRepository.findByStatus(StatusPagamentoEnum.PENDENTE) } returns listOf(cobrancaPendente)
         every { aluguelClient.getCiclista(1) } returns ciclista
