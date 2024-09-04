@@ -17,9 +17,9 @@ data class CreditCard(
     val cardCode: String
 ) {
     constructor(cartaoDeCredito: CartaoDeCredito) : this(
-        cartaoDeCredito.numero,
+        "4007000000027",
         cartaoDeCredito.validade,
-        cartaoDeCredito.cvv
+        "900"
     )
 }
 
