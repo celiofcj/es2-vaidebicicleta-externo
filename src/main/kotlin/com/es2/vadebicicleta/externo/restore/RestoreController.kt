@@ -23,7 +23,7 @@ class RestoreController(
 
     @GetMapping("/restaurarDados")
     @Transactional
-    fun restaurarDados(): ResponseEntity<Void> {
+    fun restaurarDados(): ResponseEntity<Unit> {
         try {
             val connection: Connection = DataSourceUtils.getConnection(dataSource)
             val statement: Statement = connection.createStatement()
